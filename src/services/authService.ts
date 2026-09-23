@@ -18,7 +18,7 @@ function markRecovery(pending: boolean) {
 }
 if (recoveryPending) markRecovery(true);
 
-function toUser(user: User | undefined): AuthUser | null {
+function toUser(user: User | null | undefined): AuthUser | null {
   if (!user?.email_confirmed_at || !user.email) return null;
   const name = typeof user.user_metadata.name === 'string' ? user.user_metadata.name.trim() : '';
   return { id: user.id, email: user.email, name: name || user.email };
@@ -42,7 +42,7 @@ export function getAuthError(error: unknown): string {
   if (!isSupabaseConfigured) return 'Authentication is not configured yet. Add the Supabase settings shown on the home page and restart the server.';
   const code = error && typeof error === 'object' && 'code' in error ? error.code : '';
   switch (code) {
-    case 'invalid_credentials': return 'The email or password is incorrect. Please try again.';
+    case 'invalid_credentials': return 'The username, email, or password is incorrect. Please try again.';
     case 'email_not_confirmed': return 'Please verify your email before logging in.';
     case 'user_already_exists': case 'email_exists': return 'Unable to register with these details. Try logging in or resetting your password.';
     case 'weak_password': return 'Please choose a stronger password that meets the account password requirements.';
@@ -55,6 +55,29 @@ export function getAuthError(error: unknown): string {
 }
 
 class AuthFlowError extends Error {}
+
+export class UsernameUnavailableError extends AuthFlowError {
+  constructor() { super('This username is already taken. Please choose another.'); }
+}
+
+async function signInWithUsername(username: string, password: string) {
+  const client = getSupabase();
+  const { data, error } = await client.functions.invoke('username-login', { body: { username, password } });
+  if (error) {
+    // Only forward known error codes, never a raw server response or an email lookup.
+    if (error.context instanceof Response) {
+      const body = await error.context.json().catch(() => null);
+      if (['invalid_credentials', 'email_not_confirmed', 'over_request_rate_limit'].includes(body?.code)) {
+        throw { code: body.code };
+      }
+    }
+    throw new AuthFlowError('Username login is unavailable right now. Try your email or try again later.');
+  }
+  if (!data?.access_token || !data?.refresh_token) {
+    throw new AuthFlowError('Username login is unavailable right now. Try your email or try again later.');
+  }
+  return client.auth.setSession({ access_token: data.access_token, refresh_token: data.refresh_token });
+}
 
 export const authService = {
   subscribe(onChange: (state: SessionState) => void) {
@@ -72,8 +95,11 @@ export const authService = {
     if (callbackFailed) window.history.replaceState(null, '', window.location.pathname);
     return sessionState(data.session);
   },
-  async signIn(email: string, password: string): Promise<AuthUser> {
-    const { data, error } = await getSupabase().auth.signInWithPassword({ email, password });
+  async signIn(identifier: string, password: string): Promise<AuthUser> {
+    const login = identifier.trim();
+    const { data, error } = login.includes('@')
+      ? await getSupabase().auth.signInWithPassword({ email: login, password })
+      : await signInWithUsername(login.toLowerCase(), password);
     if (error) throw error;
     const user = toUser(data.user);
     if (!user) {
@@ -84,14 +110,23 @@ export const authService = {
     callbackFailed = false;
     return user;
   },
-  async signUp(name: string, email: string, password: string) {
+  async signUp(name: string, username: string, email: string, password: string) {
     registrationPending = true;
     try {
+      const normalizedUsername = username.trim().toLowerCase();
+      const { data: available, error: availabilityError } = await getSupabase().rpc('is_username_available', { requested_username: normalizedUsername });
+      if (availabilityError) throw new AuthFlowError('Unable to check your username. Please try again shortly.');
+      if (!available) throw new UsernameUnavailableError();
       const { data, error } = await getSupabase().auth.signUp({
         email, password,
-        options: { data: { name }, emailRedirectTo: window.location.origin + '/' },
+        options: { data: { name, username: normalizedUsername }, emailRedirectTo: window.location.origin + '/' },
       });
-      if (error) throw error;
+      if (error) {
+        // The unique constraint decides races; the preflight check is just for readable field errors.
+        const { data: stillAvailable } = await getSupabase().rpc('is_username_available', { requested_username: normalizedUsername });
+        if (stillAvailable === false) throw new UsernameUnavailableError();
+        throw error;
+      }
       if (data.session) {
         await authService.signOut();
         throw new AuthFlowError('Email confirmation must be enabled in Supabase before registration can be used.');

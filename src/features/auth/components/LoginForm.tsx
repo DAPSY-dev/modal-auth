@@ -7,17 +7,17 @@ import { showModal, signedIn } from '../authSlice';
 import type { RememberedUser } from '../types';
 import { useAuthRequest } from '../useAuthRequest';
 import { useFieldValidation } from '../useFieldValidation';
-import { validateEmail, validatePassword } from '../validation';
+import { validateLoginIdentifier, validatePassword } from '../validation';
 
 export function LoginForm({ rememberedUser, onSwitchAccount }: {
   rememberedUser?: RememberedUser; onSwitchAccount?: () => void;
 }) {
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useAppDispatch();
   const { run, loading, error, setError } = useAuthRequest();
   const { field, validate } = useFieldValidation({
-    email: () => rememberedUser ? undefined : validateEmail(email),
+    identifier: () => rememberedUser ? undefined : validateLoginIdentifier(identifier),
     password: () => validatePassword(password),
   });
   return (
@@ -29,7 +29,7 @@ export function LoginForm({ rememberedUser, onSwitchAccount }: {
         setError(null);
         if (!validate(event.currentTarget)) return;
         void run(async () => {
-          const user = await authService.signIn(rememberedUser?.email ?? email.trim(), password);
+          const user = await authService.signIn(rememberedUser?.email ?? identifier.trim(), password);
           setRememberedUser(user);
           dispatch(signedIn(user));
         });
@@ -37,7 +37,7 @@ export function LoginForm({ rememberedUser, onSwitchAccount }: {
         <fieldset disabled={loading}>
           <legend>Login details</legend>
           {rememberedUser ? <p>{rememberedUser.email}</p> :
-            <Input {...field('email')} label="Email" name="email" type="email" autoComplete="username" required value={email} onChange={(e) => setEmail(e.target.value)} />}
+            <Input {...field('identifier')} label="Username or email" name="identifier" type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} required value={identifier} onChange={(e) => setIdentifier(e.target.value)} />}
           <Input {...field('password')} label="Password" name="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
           <button type="submit">{loading ? 'Logging in…' : 'Log in'}</button>
           {onSwitchAccount && <button type="button" onClick={onSwitchAccount}>Not you?</button>}

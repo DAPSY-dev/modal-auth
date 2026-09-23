@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { App } from '../App';
 import { createAppStore } from '../app/store';
 import { sessionReceived } from '../features/auth/authSlice';
-import { authService } from '../services/authService';
+import { authService, UsernameUnavailableError } from '../services/authService';
 import { getRememberedUser, setRememberedUser } from '../storage/rememberedUserStorage';
 
 vi.mock('../services/supabase', () => ({ isSupabaseConfigured: true }));
@@ -32,19 +32,51 @@ async function openLogin(user: ReturnType<typeof userEvent.setup>) {
 beforeEach(() => { localStorage.clear(); vi.resetAllMocks(); });
 
 describe('authentication dialogs', () => {
+  it('accepts a username as a login identifier', async () => {
+    vi.mocked(authService.signIn).mockResolvedValue(john);
+    const { user } = setup();
+    const dialog = await openLogin(user);
+    await user.type(dialog.getByLabelText('Username or email'), 'John_Doe');
+    await user.type(dialog.getByLabelText('Password'), 'test-password');
+    await user.click(dialog.getByRole('button', { name: 'Log in' }));
+    expect(authService.signIn).toHaveBeenCalledWith('John_Doe', 'test-password');
+    expect(await screen.findByRole('heading', { name: 'Welcome, John' })).toBeInTheDocument();
+  });
+
+  it('validates username format and shows a taken username error at the field', async () => {
+    vi.mocked(authService.signUp).mockRejectedValue(new UsernameUnavailableError());
+    const { user } = setup();
+    const dialog = await openLogin(user);
+    await user.click(dialog.getByRole('button', { name: 'Register' }));
+    await user.type(dialog.getByLabelText('Name'), 'John');
+    await user.type(dialog.getByLabelText('Username'), 'bad name');
+    await user.type(dialog.getByLabelText('Email'), john.email);
+    await user.type(dialog.getByLabelText('Password'), 'test-password');
+    await user.click(dialog.getByRole('button', { name: 'Create account' }));
+    expect(dialog.getByLabelText('Username')).toHaveAttribute('aria-invalid', 'true');
+    expect(authService.signUp).not.toHaveBeenCalled();
+    await user.clear(dialog.getByLabelText('Username'));
+    await user.type(dialog.getByLabelText('Username'), 'john_doe');
+    await user.click(dialog.getByRole('button', { name: 'Create account' }));
+    expect(await dialog.findByRole('alert')).toHaveTextContent('username is already taken');
+    expect(dialog.getByLabelText('Username')).toHaveFocus();
+    await user.type(dialog.getByLabelText('Username'), '2');
+    expect(dialog.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('validates login fields without native validation and clears errors as fields are corrected', async () => {
     const { user } = setup();
     const dialog = await openLogin(user);
     expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
-    const email = dialog.getByLabelText('Email');
+    const email = dialog.getByLabelText(/^(Username or email|Email)$/);
     const password = dialog.getByLabelText('Password');
-    expect(email).toHaveAccessibleDescription('Please enter your email.');
+    expect(email).toHaveAccessibleDescription('Please enter your username or email.');
     expect(password).toHaveAccessibleDescription('Please enter your password.');
     expect(email).toHaveAttribute('aria-invalid', 'true');
     expect(email).toHaveFocus();
     expect(authService.signIn).not.toHaveBeenCalled();
-    await user.type(email, 'invalid');
+    await user.type(email, 'invalid@');
     expect(email).toHaveAccessibleDescription('Please enter a valid email address.');
     await user.clear(email);
     await user.type(email, john.email);
@@ -65,12 +97,13 @@ describe('authentication dialogs', () => {
     await user.type(dialog.getByLabelText('Name'), '   ');
     await user.tab();
     expect(dialog.getByLabelText('Name')).toHaveAccessibleDescription('Please enter your name.');
-    await user.type(dialog.getByLabelText('Email'), 'invalid');
+    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), 'invalid');
     await user.type(dialog.getByLabelText('Password'), 'short');
     await user.click(dialog.getByRole('button', { name: 'Create account' }));
     expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
-    expect(dialog.getAllByRole('alert')).toHaveLength(3);
-    expect(dialog.getByLabelText('Email')).toHaveAccessibleDescription('Please enter a valid email address.');
+    expect(dialog.getAllByRole('alert')).toHaveLength(4);
+    expect(dialog.getByLabelText('Username')).toHaveAccessibleDescription(expect.stringContaining('Please enter a username.'));
+    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveAccessibleDescription('Please enter a valid email address.');
     expect(dialog.getByLabelText('Password')).toHaveAccessibleDescription('Use at least 8 characters. Use at least 8 characters for your password.');
     expect(authService.signUp).not.toHaveBeenCalled();
     expect(dialog.getByLabelText('Name')).toHaveFocus();
@@ -81,10 +114,10 @@ describe('authentication dialogs', () => {
     const dialog = await openLogin(user);
     await user.click(dialog.getByRole('button', { name: 'Forgot password?' }));
     await user.click(dialog.getByRole('button', { name: 'Send reset instructions' }));
-    expect(dialog.getByLabelText('Email')).toHaveAccessibleDescription('Please enter your email.');
-    await user.type(dialog.getByLabelText('Email'), 'wrong@');
+    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveAccessibleDescription('Please enter your email.');
+    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), 'wrong@');
     await user.click(dialog.getByRole('button', { name: 'Send reset instructions' }));
-    expect(dialog.getByLabelText('Email')).toHaveAccessibleDescription('Please enter a valid email address.');
+    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveAccessibleDescription('Please enter a valid email address.');
     expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
     expect(authService.requestPasswordReset).not.toHaveBeenCalled();
   });
@@ -124,10 +157,10 @@ describe('authentication dialogs', () => {
   it('shows standard login, navigation, and restores focus on close', async () => {
     const { user } = setup();
     const dialog = await openLogin(user);
-    expect(dialog.getByLabelText('Email')).toBeRequired();
+    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toBeRequired();
     await user.click(dialog.getByRole('button', { name: 'Forgot password?' }));
     expect(dialog.getByRole('heading', { name: 'Forgot password?' })).toHaveFocus();
-    await user.type(dialog.getByLabelText('Email'), john.email);
+    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), john.email);
     await user.click(dialog.getByRole('button', { name: 'Send reset instructions' }));
     expect(await dialog.findByRole('heading', { name: 'Check your email' })).toBeInTheDocument();
     expect(dialog.getByRole('status')).toHaveTextContent('If an account exists');
@@ -140,7 +173,7 @@ describe('authentication dialogs', () => {
     vi.mocked(authService.signIn).mockResolvedValue(john);
     const { user } = setup();
     let dialog = await openLogin(user);
-    await user.type(dialog.getByLabelText('Email'), john.email);
+    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), john.email);
     await user.type(dialog.getByLabelText('Password'), 'test-password');
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
     expect(await screen.findByRole('heading', { name: 'Welcome, John' })).toBeInTheDocument();
@@ -151,7 +184,7 @@ describe('authentication dialogs', () => {
     expect(await screen.findByRole('heading', { name: 'Welcome to our site' })).toBeInTheDocument();
     dialog = await openLogin(user);
     expect(dialog.getByRole('heading')).toHaveTextContent('Welcome back, John');
-    expect(dialog.queryByLabelText('Email')).not.toBeInTheDocument();
+    expect(dialog.queryByLabelText(/^(Username or email|Email)$/)).not.toBeInTheDocument();
     await user.type(dialog.getByLabelText('Password'), 'another-password');
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
     expect(authService.signIn).toHaveBeenLastCalledWith(john.email, 'another-password');
@@ -162,7 +195,7 @@ describe('authentication dialogs', () => {
     const { user } = setup();
     const dialog = await openLogin(user);
     await user.click(dialog.getByRole('button', { name: 'Not you?' }));
-    expect(dialog.getByLabelText('Email')).toHaveValue('');
+    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveValue('');
     expect(dialog.getByLabelText('Password')).toHaveValue('');
     expect(getRememberedUser()).toBeNull();
   });
@@ -172,7 +205,7 @@ describe('authentication dialogs', () => {
     vi.mocked(authService.signIn).mockImplementation(() => new Promise((_, reject) => { rejectLogin = reject; }));
     const { user } = setup();
     const dialog = await openLogin(user);
-    await user.type(dialog.getByLabelText('Email'), john.email);
+    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), john.email);
     await user.type(dialog.getByLabelText('Password'), 'wrong-password');
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
     expect(dialog.getByRole('button', { name: 'Logging in…' })).toBeDisabled();
@@ -180,7 +213,7 @@ describe('authentication dialogs', () => {
     fireEvent.submit(dialog.getByRole('form'));
     expect(authService.signIn).toHaveBeenCalledOnce();
     await act(async () => rejectLogin({ code: 'invalid_credentials' }));
-    expect(await dialog.findByRole('alert')).toHaveTextContent('email or password is incorrect');
+    expect(await dialog.findByRole('alert')).toHaveTextContent('username, email, or password is incorrect');
     expect(dialog.getByRole('button', { name: 'Log in' })).toBeEnabled();
   });
 
@@ -189,10 +222,11 @@ describe('authentication dialogs', () => {
     const dialog = await openLogin(user);
     await user.click(dialog.getByRole('button', { name: 'Register' }));
     await user.type(dialog.getByLabelText('Name'), 'John');
-    await user.type(dialog.getByLabelText('Email'), john.email);
+    await user.type(dialog.getByLabelText('Username'), 'john_doe');
+    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), john.email);
     await user.type(dialog.getByLabelText('Password'), 'test-password');
     await user.click(dialog.getByRole('button', { name: 'Create account' }));
-    expect(authService.signUp).toHaveBeenCalledWith('John', john.email, 'test-password');
+    expect(authService.signUp).toHaveBeenCalledWith('John', 'john_doe', john.email, 'test-password');
     expect(await dialog.findByRole('heading', { name: 'Registration successful' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Welcome to our site' })).toBeInTheDocument();
     expect(dialog.getByRole('status')).toHaveTextContent('verify your account');
@@ -239,4 +273,5 @@ describe('authentication dialogs', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
+
 

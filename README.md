@@ -1,6 +1,6 @@
 # Authentication modal demo
 
-A small React + TypeScript application demonstrating Supabase email/password authentication through accessible native dialogs. Vite runs the app, React Router provides the single application route, and Redux Toolkit holds authentication and modal state. Form fields stay in local React state. Vitest and React Testing Library cover the key flows.
+A small React + TypeScript application demonstrating Supabase username-or-email/password authentication through accessible native dialogs. Vite runs the app, React Router provides the single application route, and Redux Toolkit holds authentication and modal state. Form fields stay in local React state. Vitest and React Testing Library cover the key flows.
 
 **Styling is intentionally omitted.** There are no CSS files, inline styles, or styling classes. The UI will later be styled against the provided Figma design. Native browser controls, dialog backdrop, and fieldset borders are browser defaults.
 
@@ -44,7 +44,24 @@ This is a Vite app, not a PHP application. Being in an XAMPP folder does not mak
 4. Keep the default confirmation and recovery email templates using `{{ .ConfirmationURL }}`. Configure email delivery/SMTP as appropriate for your project. Supabase's built-in email delivery can restrict recipients and impose rate limits.
 5. Set a minimum password length of at least 8 in Supabase. The forms also enforce 8 characters; Supabase enforces any additional configured password rules.
 
-No database tables or custom backend are needed. Name is stored in the auth user's `user_metadata.name`.
+Name is stored in the auth user's `user_metadata.name`. Username authentication also needs the migration and Edge Function below.
+
+### Username backend
+
+This backend is deployed to the configured `modal-auth` project. The migration, private resolver permissions, username constraints, and rate limit have been verified. The steps below are for setting up another project; do not rerun the migration on this one.
+
+1. Apply `supabase/migrations/202609240001_usernames.sql` once in the project's SQL editor (or with the Supabase CLI migration workflow).
+2. Deploy `supabase/functions/username-login/index.ts` as the `username-login` Edge Function. For CLI deployment: `supabase functions deploy username-login --project-ref YOUR_PROJECT_REF`. The checked-in `supabase/config.toml` sets `verify_jwt = false` for this function because login happens before a user has a session. If deploying through the dashboard, disable **Verify JWT with legacy secret** for this function. It still verifies passwords using Supabase Auth before issuing any session.
+3. The hosted function uses Supabase's automatically supplied `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `SUPABASE_SERVICE_ROLE_KEY`. Never copy the service-role key into Vite environment variables. No additional browser key is needed.
+4. Run `supabase/tests/usernames.sql` to verify database uniqueness, username ownership, permissions, and rate limiting. It creates synthetic records inside a transaction and rolls everything back.
+
+Usernames are required for new accounts, contain 3–30 ASCII letters, numbers, or underscores, and are stored lowercase. `John_Doe` and `john_doe` identify the same account. A database trigger reserves the username in the same transaction as account creation; concurrent signups cannot claim the same username. Availability is checked before signup for a field-specific error, with the database constraint as the final authority. Dashboard/admin-created users also need valid `username` user metadata.
+
+The private username registry stores only the username and auth user ID. Browser roles cannot read it or call the email resolver. The public availability RPC returns only a boolean. The Edge Function resolves the current email on the server, authenticates with Supabase Auth, and returns session tokens only after successful authentication of a verified account. The browser passes these directly to `supabase.auth.setSession()` so the SDK remains responsible for storage and refresh. No public username-to-email endpoint exists.
+
+Username attempts are limited to 10 per username per five minutes, including unknown usernames. Supabase's Auth rate limits also apply. Old attempt counters are removed on subsequent requests after one day. Account-based limits can temporarily block legitimate login after repeated failed attempts; the email login path remains available.
+
+Existing accounts without usernames continue using email login. This migration deliberately does not invent usernames or alter existing accounts. Username changes are not implemented; editing user metadata does not change the registered login identity. Forgotten-password requests still use email.
 
 The local environment is connected to the `modal-auth` Supabase project. Email confirmation is enabled and the minimum password length is 8. Redirects allow both `127.0.0.1` and `localhost` on development port 5173 and preview port 4173. Prefer `127.0.0.1`: this browser has an older Reminder service worker on `localhost:5173`.
 
@@ -56,8 +73,8 @@ See the official [password recovery API](https://supabase.com/docs/reference/jav
 
 ## Try the flows
 
-- Open **Log in**, choose **Register**, and enter a name, email, and password. A separate success dialog asks you to check your email. Existing accounts may receive the same neutral response because Supabase deliberately hides account existence.
-- Verify the account using the email. Supabase may establish a verified session after confirmation. If necessary, log out, then log in with the verified email and password. The welcome message displays the saved name.
+- Open **Log in**, choose **Register**, and enter a name, unique username, email, and password. A separate success dialog asks you to check your email. Existing accounts may receive the same neutral response because Supabase deliberately hides account existence.
+- Verify the account using the email. Supabase may establish a verified session after confirmation. If necessary, log out, then log in with either the username or verified email and password. The welcome message displays the saved name.
 - Refresh while logged in: a session check appears until Supabase restores the session.
 - Log out, then reopen login: **Welcome back** asks only for a password. **Not you?** clears the preference and shows the normal email/password form.
 - Choose **Forgot password?** and request instructions. The confirmation does not reveal whether that email has an account.
@@ -75,7 +92,8 @@ Forms use custom field validation instead of browser validation popups. Each fie
 - `src/components/`: labeled input and native dialog primitives. Plain buttons need no abstraction.
 - `src/storage/rememberedUserStorage.ts`: optional non-sensitive remembered identity storage.
 - `src/app/`: store and router; `App.tsx` supplies the minimal header and welcome message.
-- `src/test/`: behavior tests mocking the auth service, plus session-startup and service-boundary tests. jsdom stubs the native dialog API; actual browser focus containment relies on native dialog support.
+- `src/test/`: behavior tests mocking the auth service, plus session-startup, service-boundary, and Edge Function handler tests. jsdom stubs the native dialog API; actual browser focus containment relies on native dialog support.
+- `supabase/`: private username registry migration, transactional SQL checks, and the username login Edge Function.
 
 The remembered preference stores only `{ email, name }` after successful password login. Logout retains it. **Not you?** clears it. This is a convenience preference, not authentication; avoid remembering an identity on a shared browser if that information should not remain visible. Storage failures do not prevent login.
 
