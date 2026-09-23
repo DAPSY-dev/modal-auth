@@ -32,6 +32,95 @@ async function openLogin(user: ReturnType<typeof userEvent.setup>) {
 beforeEach(() => { localStorage.clear(); vi.resetAllMocks(); });
 
 describe('authentication dialogs', () => {
+  it('validates login fields without native validation and clears errors as fields are corrected', async () => {
+    const { user } = setup();
+    const dialog = await openLogin(user);
+    expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
+    await user.click(dialog.getByRole('button', { name: 'Log in' }));
+    const email = dialog.getByLabelText('Email');
+    const password = dialog.getByLabelText('Password');
+    expect(email).toHaveAccessibleDescription('Please enter your email.');
+    expect(password).toHaveAccessibleDescription('Please enter your password.');
+    expect(email).toHaveAttribute('aria-invalid', 'true');
+    expect(email).toHaveFocus();
+    expect(authService.signIn).not.toHaveBeenCalled();
+    await user.type(email, 'invalid');
+    expect(email).toHaveAccessibleDescription('Please enter a valid email address.');
+    await user.clear(email);
+    await user.type(email, john.email);
+    expect(email).not.toHaveAttribute('aria-invalid');
+    await user.type(password, 'short');
+    expect(password).not.toHaveAttribute('aria-invalid');
+    // Existing accounts can have passwords shorter than today's registration policy.
+    vi.mocked(authService.signIn).mockResolvedValue(john);
+    await user.click(dialog.getByRole('button', { name: 'Log in' }));
+    expect(authService.signIn).toHaveBeenCalledWith(john.email, 'short');
+  });
+
+  it('validates name, email, and password independently during registration', async () => {
+    const { user } = setup();
+    const dialog = await openLogin(user);
+    await user.click(dialog.getByRole('button', { name: 'Register' }));
+    expect(dialog.queryByRole('alert')).not.toBeInTheDocument();
+    await user.type(dialog.getByLabelText('Name'), '   ');
+    await user.tab();
+    expect(dialog.getByLabelText('Name')).toHaveAccessibleDescription('Please enter your name.');
+    await user.type(dialog.getByLabelText('Email'), 'invalid');
+    await user.type(dialog.getByLabelText('Password'), 'short');
+    await user.click(dialog.getByRole('button', { name: 'Create account' }));
+    expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
+    expect(dialog.getAllByRole('alert')).toHaveLength(3);
+    expect(dialog.getByLabelText('Email')).toHaveAccessibleDescription('Please enter a valid email address.');
+    expect(dialog.getByLabelText('Password')).toHaveAccessibleDescription('Use at least 8 characters. Use at least 8 characters for your password.');
+    expect(authService.signUp).not.toHaveBeenCalled();
+    expect(dialog.getByLabelText('Name')).toHaveFocus();
+  });
+
+  it('validates the recovery email before requesting an email', async () => {
+    const { user } = setup();
+    const dialog = await openLogin(user);
+    await user.click(dialog.getByRole('button', { name: 'Forgot password?' }));
+    await user.click(dialog.getByRole('button', { name: 'Send reset instructions' }));
+    expect(dialog.getByLabelText('Email')).toHaveAccessibleDescription('Please enter your email.');
+    await user.type(dialog.getByLabelText('Email'), 'wrong@');
+    await user.click(dialog.getByRole('button', { name: 'Send reset instructions' }));
+    expect(dialog.getByLabelText('Email')).toHaveAccessibleDescription('Please enter a valid email address.');
+    expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
+    expect(authService.requestPasswordReset).not.toHaveBeenCalled();
+  });
+
+  it('validates only the password for a remembered user', async () => {
+    setRememberedUser(john);
+    const { user } = setup();
+    const dialog = await openLogin(user);
+    await user.click(dialog.getByRole('button', { name: 'Log in' }));
+    expect(dialog.getByLabelText('Password')).toHaveAccessibleDescription('Please enter your password.');
+    expect(dialog.getByLabelText('Password')).toHaveFocus();
+    expect(dialog.getAllByRole('alert')).toHaveLength(1);
+    expect(authService.signIn).not.toHaveBeenCalled();
+  });
+
+  it('validates both reset fields and rechecks confirmation when the new password changes', async () => {
+    const { user } = setup(true);
+    const dialog = within(screen.getByRole('dialog'));
+    const password = dialog.getByLabelText('New password');
+    const confirmation = dialog.getByLabelText('Confirm new password');
+    await user.click(dialog.getByRole('button', { name: 'Save new password' }));
+    expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
+    expect(password).toHaveAccessibleDescription('Please enter a new password.');
+    expect(confirmation).toHaveAccessibleDescription('Please confirm your new password.');
+    await user.type(password, 'short');
+    expect(password).toHaveAccessibleDescription('Use at least 8 characters for your password.');
+    await user.type(password, '-password');
+    await user.type(confirmation, 'short-password');
+    expect(confirmation).not.toHaveAttribute('aria-invalid');
+    await user.type(password, '-changed');
+    expect(confirmation).toHaveAccessibleDescription('The passwords do not match.');
+    await user.click(dialog.getByRole('button', { name: 'Save new password' }));
+    expect(confirmation).toHaveFocus();
+    expect(authService.updatePassword).not.toHaveBeenCalled();
+  });
+
   it('shows standard login, navigation, and restores focus on close', async () => {
     const { user } = setup();
     const dialog = await openLogin(user);

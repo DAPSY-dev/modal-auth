@@ -66,6 +66,8 @@ See the official [password recovery API](https://supabase.com/docs/reference/jav
 
 Use Tab/Shift+Tab to move through controls and Escape to close a dialog. Native `showModal()` supplies focus containment and makes the background inert. Dialog transitions focus their heading; closing returns focus to the account control. Closing and navigation are disabled while a request is pending.
 
+Forms use custom field validation instead of browser validation popups. Each field shows an accessible error on blur or submit, then updates it while you edit. Invalid submission focuses the first invalid field and does not call Supabase. Password mismatch belongs to the confirmation field. General service and login-credential errors remain at the form level.
+
 ## Organization
 
 - `src/services/`: Supabase initialization, operations, session events, and readable errors. Only this layer calls Supabase.
