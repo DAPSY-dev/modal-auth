@@ -8,6 +8,7 @@ export type RememberedUser = Pick<AuthUser, 'email' | 'name'>;
 
 export type AuthModalState =
   | 'login'
+  | 'welcomeBack'
   | 'register'
   | 'registrationSuccess'
   | 'forgotPassword'

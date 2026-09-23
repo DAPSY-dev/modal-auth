@@ -11,6 +11,7 @@ export function App() {
   return <>
     <header>
       <a href="/" aria-label="Authentication demo home">Authentication demo</a>
+      <a href="/ui">UI showcase</a>
       <nav aria-label="Account">
         <button disabled={status === 'initializing' || busy} onClick={() => {
           if (!user) { dispatch(showModal('login')); return; }

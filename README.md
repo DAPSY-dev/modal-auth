@@ -73,6 +73,8 @@ See the official [password recovery API](https://supabase.com/docs/reference/jav
 
 ## Try the flows
 
+For styling and demonstrations, visit `/ui` (or use **UI showcase** in the header). Each modal has its own button, including Welcome Back, all success states, and the invalid-link state. The page reuses the real components with an isolated preview store. Forms validate normally and simulate successful transitions; they never call Supabase, send emails, change passwords, or alter your real session or remembered identity. Modal selection stays in application state, without URL parameters. Refreshing `/ui` starts with every modal closed.
+
 - Open **Log in**, choose **Register**, and enter a name, unique username, email, and password. A separate success dialog asks you to check your email. Existing accounts may receive the same neutral response because Supabase deliberately hides account existence.
 - Verify the account using the email. Supabase may establish a verified session after confirmation. If necessary, log out, then log in with either the username or verified email and password. The welcome message displays the saved name.
 - Refresh while logged in: a session check appears until Supabase restores the session.

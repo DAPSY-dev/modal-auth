@@ -13,7 +13,7 @@ import { ForgotPasswordSuccess } from './ForgotPasswordSuccess';
 import { ResetPasswordForm } from './ResetPasswordForm';
 import { ResetPasswordSuccess } from './ResetPasswordSuccess';
 
-export function AuthModal() {
+export function AuthModal({ preview = false }: { preview?: boolean }) {
   const { modal, rememberedUser, recovery, busy } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const { run, error, setError } = useAuthRequest();
@@ -24,7 +24,7 @@ export function AuthModal() {
   if (!modal) return null;
 
   const close = () => {
-    if (recovery || modal === 'callbackError') {
+    if (!preview && (recovery || modal === 'callbackError')) {
       void run(async () => {
         await authService.signOut(); dispatch(signedOut()); dispatch(showModal(null));
       });
@@ -33,19 +33,25 @@ export function AuthModal() {
 
   let view;
   switch (modal) {
-    case 'login': view = rememberedUser ? <WelcomeBackForm user={rememberedUser} /> : <LoginForm />; break;
-    case 'register': view = <RegisterForm />; break;
+    case 'login': view = !preview && rememberedUser ? <WelcomeBackForm user={rememberedUser} /> : <LoginForm preview={preview} />; break;
+    case 'welcomeBack': view = preview
+      ? <WelcomeBackForm preview user={{ name: 'Alex', email: 'alex@example.com' }} />
+      : rememberedUser ? <WelcomeBackForm user={rememberedUser} /> : <LoginForm />; break;
+    case 'register': view = <RegisterForm preview={preview} />; break;
     case 'registrationSuccess': view = <RegistrationSuccess />; break;
-    case 'forgotPassword': view = <ForgotPasswordForm />; break;
+    case 'forgotPassword': view = <ForgotPasswordForm preview={preview} />; break;
     case 'forgotPasswordSuccess': view = <ForgotPasswordSuccess />; break;
-    case 'resetPassword': view = <ResetPasswordForm />; break;
+    case 'resetPassword': view = <ResetPasswordForm preview={preview} />; break;
     case 'resetPasswordSuccess': view = <ResetPasswordSuccess />; break;
     case 'callbackError': view = <>
       <h2 id="auth-title" tabIndex={-1}>This link is invalid or has expired</h2>
       <p role="alert">Please request a new password-reset email, or log in if you have already verified your account.</p>
-      <button disabled={busy} onClick={() => void run(async () => {
+      <button disabled={busy} onClick={() => {
+        if (preview) { dispatch(showModal('forgotPassword')); return; }
+        void run(async () => {
         await authService.signOut(); dispatch(signedOut()); dispatch(showModal('forgotPassword'));
-      })}>Request a new reset link</button>
+        });
+      }}>Request a new reset link</button>
     </>; break;
   }
   return <Modal busy={busy} onClose={close}>
