@@ -6,6 +6,7 @@ import { showModal } from '../features/auth/authSlice';
 import { AuthModal } from '../features/auth/components/AuthModal';
 import type { AuthModalState } from '../features/auth/types';
 import { UsernameRecoveryPreview } from './UsernameRecoveryPreview';
+import { AccountFrozenPreview } from './AccountFrozenPreview';
 
 export const modalPreviews: { state: Exclude<AuthModalState, null>; label: string }[] = [
   { state: 'login', label: 'Login' },
@@ -22,6 +23,7 @@ export const modalPreviews: { state: Exclude<AuthModalState, null>; label: strin
 function ModalShowcase() {
   const dispatch = useAppDispatch();
   const [showUsernameRecovery, setShowUsernameRecovery] = useState(false);
+  const [showAccountFrozen, setShowAccountFrozen] = useState(false);
   return <>
     <header><Link to="/">Back to home</Link></header>
     <main>
@@ -33,10 +35,12 @@ function ModalShowcase() {
           <button type="button" onClick={() => dispatch(showModal(state))}>{label}</button>
         </li>)}
         <li><button type="button" onClick={() => setShowUsernameRecovery(true)}>Username recovery (dummy)</button></li>
+        <li><button type="button" onClick={() => setShowAccountFrozen(true)}>Account frozen (dummy)</button></li>
       </ul>
     </main>
     <AuthModal preview />
     {showUsernameRecovery && <UsernameRecoveryPreview onClose={() => setShowUsernameRecovery(false)} />}
+    {showAccountFrozen && <AccountFrozenPreview onClose={() => setShowAccountFrozen(false)} />}
   </>;
 }
 
