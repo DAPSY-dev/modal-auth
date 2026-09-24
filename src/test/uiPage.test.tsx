@@ -26,7 +26,8 @@ function setup() {
 beforeEach(() => {
   localStorage.clear();
   setRememberedUser(realUser);
-  vi.clearAllMocks();
+  vi.resetAllMocks();
+  vi.mocked(authService.signIn).mockResolvedValue(realUser);
 });
 
 it.each([
@@ -41,7 +42,7 @@ it.each([
   ['Reset password', 'Set a new password'],
   ['Password reset success', 'Password updated'],
   ['Invalid or expired link', 'This link is invalid or has expired'],
-])('opens the %s preview directly and returns focus on close', async (button, heading) => {
+])('opens the %s modal directly and returns focus on close', async (button, heading) => {
   const { user, store } = setup();
   const trigger = screen.getByRole('button', { name: button });
   await user.click(trigger);
@@ -50,12 +51,12 @@ it.each([
   await user.click(dialog.getByRole('button', { name: 'Close' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(trigger).toHaveFocus();
-  expect(store.getState().auth.user).toEqual(realUser);
+  expect(store.getState().auth.user).toEqual(button === 'Invalid or expired link' ? null : realUser);
   expect(store.getState().auth.modal).toBeNull();
-  expect(authService.signOut).not.toHaveBeenCalled();
+  expect(authService.signOut).toHaveBeenCalledTimes(button === 'Invalid or expired link' ? 1 : 0);
 });
 
-it('simulates password changes without updating the real account', async () => {
+it('submits password changes through the real service', async () => {
   const { user, store } = setup();
   await user.click(screen.getByRole('button', { name: 'Change password' }));
   const dialog = within(screen.getByRole('dialog'));
@@ -64,11 +65,11 @@ it('simulates password changes without updating the real account', async () => {
   await user.type(dialog.getByLabelText('Confirm new password'), 'sample-password');
   await user.click(dialog.getByRole('button', { name: 'Save new password' }));
   expect(dialog.getByRole('heading', { name: 'Password changed' })).toBeInTheDocument();
-  expect(authService.changePassword).not.toHaveBeenCalled();
+  expect(authService.changePassword).toHaveBeenCalledWith('sample-old-password', 'sample-password');
   expect(store.getState().auth.user).toEqual(realUser);
 });
 
-it('simulates form transitions without changing auth state, storage, or calling Supabase', async () => {
+it('submits registration, login, email, and reset actions through the shared service', async () => {
   const { user, store } = setup();
   await user.click(screen.getByRole('button', { name: 'Register' }));
   let dialog = within(screen.getByRole('dialog'));
@@ -100,9 +101,13 @@ it('simulates form transitions without changing auth state, storage, or calling 
   await user.type(dialog.getByLabelText('Confirm new password'), 'sample-password');
   await user.click(dialog.getByRole('button', { name: 'Save new password' }));
   expect(dialog.getByRole('heading', { name: 'Password updated' })).toBeInTheDocument();
-  expect(store.getState().auth.user).toEqual(realUser);
+  expect(store.getState().auth.user).toBeNull();
   expect(getRememberedUser()).toEqual({ email: realUser.email, name: realUser.name });
-  for (const action of Object.values(authService)) expect(action).not.toHaveBeenCalled();
+  expect(authService.signUp).toHaveBeenCalledWith('Demo', 'demo_user', 'demo@example.com', 'sample-password');
+  expect(authService.signIn).toHaveBeenCalledWith('demo_user', 'sample-password');
+  expect(authService.requestPasswordReset).toHaveBeenCalledWith('demo@example.com');
+  expect(authService.updatePassword).toHaveBeenCalledWith('sample-password');
+  expect(authService.signOut).toHaveBeenCalledOnce();
 });
 
 it('switches away from the sample remembered user without clearing the real preference', async () => {
@@ -115,12 +120,22 @@ it('switches away from the sample remembered user without clearing the real pref
   expect(getRememberedUser()).toEqual({ email: realUser.email, name: realUser.name });
 });
 
-it('navigates from the invalid-link preview without ending the real session', async () => {
+it('uses real session cleanup when leaving the invalid-link modal', async () => {
   const { user } = setup();
   await user.click(screen.getByRole('button', { name: 'Invalid or expired link' }));
   const dialog = within(screen.getByRole('dialog'));
   await user.click(dialog.getByRole('button', { name: 'Request a new reset link' }));
   expect(dialog.getByRole('heading', { name: 'Forgot password?' })).toBeInTheDocument();
-  expect(authService.signOut).not.toHaveBeenCalled();
+  expect(authService.signOut).toHaveBeenCalledOnce();
 });
 
+
+it('uses sample identity only for display until an actual login succeeds', async () => {
+  const { user, store } = setup();
+  await user.click(screen.getByRole('button', { name: 'Welcome back' }));
+  const dialog = within(screen.getByRole('dialog'));
+  expect(store.getState().auth.rememberedUser?.email).toBe(realUser.email);
+  await user.type(dialog.getByLabelText('Password'), 'sample-password');
+  await user.click(dialog.getByRole('button', { name: 'Log in' }));
+  expect(authService.signIn).toHaveBeenCalledWith('alex@example.com', 'sample-password');
+});

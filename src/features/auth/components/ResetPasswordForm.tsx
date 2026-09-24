@@ -8,7 +8,7 @@ import { useAuthRequest } from '../useAuthRequest';
 import { useFieldValidation } from '../useFieldValidation';
 import { validateNewPassword, validateConfirmation } from '../validation';
 
-export function ResetPasswordForm({ preview = false }: { preview?: boolean }) {
+export function ResetPasswordForm() {
   const [password, setPassword] = useState('');
   const [confirmation, setConfirmation] = useState('');
   const [passwordUpdated, setPasswordUpdated] = useState(false);
@@ -25,7 +25,6 @@ export function ResetPasswordForm({ preview = false }: { preview?: boolean }) {
       if (loading) return;
       setError(null);
       if (!passwordUpdated && !validate(event.currentTarget)) return;
-      if (preview) { dispatch(showModal('resetPasswordSuccess')); return; }
       void run(async () => {
         if (!passwordUpdated) {
           await authService.updatePassword(password);

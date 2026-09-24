@@ -10,8 +10,8 @@ import { useAuthRequest } from '../useAuthRequest';
 import { useFieldValidation } from '../useFieldValidation';
 import { validateLoginIdentifier, validatePassword } from '../validation';
 
-export function LoginForm({ rememberedUser, onSwitchAccount, preview = false }: {
-  rememberedUser?: RememberedUser; onSwitchAccount?: () => void; preview?: boolean;
+export function LoginForm({ rememberedUser, onSwitchAccount }: {
+  rememberedUser?: RememberedUser; onSwitchAccount?: () => void;
 }) {
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -29,7 +29,6 @@ export function LoginForm({ rememberedUser, onSwitchAccount, preview = false }: 
         if (loading) return;
         setError(null);
         if (!validate(event.currentTarget)) return;
-        if (preview) { dispatch(showModal(null)); return; }
         void run(async () => {
           const user = await authService.signIn(rememberedUser?.email ?? identifier.trim(), password);
           setRememberedUser(user);

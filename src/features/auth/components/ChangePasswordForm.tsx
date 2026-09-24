@@ -8,7 +8,7 @@ import { useAuthRequest } from '../useAuthRequest';
 import { useFieldValidation } from '../useFieldValidation';
 import { validateNewPassword, validateConfirmation } from '../validation';
 
-export function ChangePasswordForm({ preview = false }: { preview?: boolean }) {
+export function ChangePasswordForm() {
   const [password, setPassword] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [oldPasswordError, setOldPasswordError] = useState<string>();
@@ -27,7 +27,6 @@ export function ChangePasswordForm({ preview = false }: { preview?: boolean }) {
       if (loading) return;
       setError(null);
       if (!validate(event.currentTarget)) return;
-      if (preview) { dispatch(showModal('changePasswordSuccess')); return; }
       void run(async () => {
         try {
           await authService.changePassword(oldPassword, password);

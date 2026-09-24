@@ -1,5 +1,5 @@
 import { Button } from '../../../components/Button';
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/store';
 import { Modal } from '../../../components/Modal';
 import { authService } from '../../../services/authService';
@@ -15,7 +15,7 @@ import { ResetPasswordForm } from './ResetPasswordForm';
 import { ResetPasswordSuccess } from './ResetPasswordSuccess';
 import { ChangePasswordForm } from './ChangePasswordForm';
 
-export function AuthModal({ preview = false }: { preview?: boolean }) {
+export function AuthModal({ loginForm }: { loginForm?: ReactNode }) {
   const { modal, rememberedUser, recovery, busy } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const { run, error, setError } = useAuthRequest();
@@ -26,7 +26,7 @@ export function AuthModal({ preview = false }: { preview?: boolean }) {
   if (!modal) return null;
 
   const close = () => {
-    if (!preview && (recovery || modal === 'callbackError')) {
+    if (recovery || modal === 'callbackError') {
       void run(async () => {
         await authService.signOut(); dispatch(signedOut()); dispatch(showModal(null));
       });
@@ -35,17 +35,15 @@ export function AuthModal({ preview = false }: { preview?: boolean }) {
 
   let view;
   switch (modal) {
-    case 'login': view = !preview && rememberedUser ? <WelcomeBackForm user={rememberedUser} /> : <LoginForm preview={preview} />; break;
-    case 'welcomeBack': view = preview
-      ? <WelcomeBackForm preview user={{ name: 'Alex', email: 'alex@example.com' }} />
-      : rememberedUser ? <WelcomeBackForm user={rememberedUser} /> : <LoginForm />; break;
-    case 'register': view = <RegisterForm preview={preview} />; break;
+    case 'login':
+    case 'welcomeBack': view = loginForm ?? (rememberedUser ? <WelcomeBackForm user={rememberedUser} /> : <LoginForm />); break;
+    case 'register': view = <RegisterForm />; break;
     case 'registrationSuccess': view = <RegistrationSuccess />; break;
-    case 'forgotPassword': view = <ForgotPasswordForm preview={preview} />; break;
+    case 'forgotPassword': view = <ForgotPasswordForm />; break;
     case 'forgotPasswordSuccess': view = <ForgotPasswordSuccess />; break;
-    case 'resetPassword': view = <ResetPasswordForm preview={preview} />; break;
+    case 'resetPassword': view = <ResetPasswordForm />; break;
     case 'resetPasswordSuccess': view = <ResetPasswordSuccess />; break;
-    case 'changePassword': view = <ChangePasswordForm preview={preview} />; break;
+    case 'changePassword': view = <ChangePasswordForm />; break;
     case 'changePasswordSuccess': view = <>
       <h2 id="auth-title" tabIndex={-1}>Password changed</h2>
       <p role="status">Your password has been changed successfully.</p>
@@ -54,7 +52,6 @@ export function AuthModal({ preview = false }: { preview?: boolean }) {
       <h2 id="auth-title" tabIndex={-1}>This link is invalid or has expired</h2>
       <p role="alert">Please request a new password-reset email, or log in if you have already verified your account.</p>
       <Button disabled={busy} onClick={() => {
-        if (preview) { dispatch(showModal('forgotPassword')); return; }
         void run(async () => {
         await authService.signOut(); dispatch(signedOut()); dispatch(showModal('forgotPassword'));
         });

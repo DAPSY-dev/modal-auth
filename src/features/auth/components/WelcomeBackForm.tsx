@@ -4,10 +4,9 @@ import { forgetUser, showModal } from '../authSlice';
 import type { RememberedUser } from '../types';
 import { LoginForm } from './LoginForm';
 
-export function WelcomeBackForm({ user, preview = false }: { user: RememberedUser; preview?: boolean }) {
+export function WelcomeBackForm({ user }: { user: RememberedUser }) {
   const dispatch = useAppDispatch();
-  return <LoginForm preview={preview} rememberedUser={user} onSwitchAccount={() => {
-    if (preview) { dispatch(showModal('login')); return; }
-    clearRememberedUser(); dispatch(forgetUser());
+  return <LoginForm rememberedUser={user} onSwitchAccount={() => {
+    clearRememberedUser(); dispatch(forgetUser()); dispatch(showModal('login'));
   }} />;
 }

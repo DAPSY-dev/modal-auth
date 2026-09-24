@@ -8,7 +8,7 @@ import { useAuthRequest } from '../useAuthRequest';
 import { useFieldValidation } from '../useFieldValidation';
 import { validateEmail, validateNewPassword, validateUsername } from '../validation';
 
-export function RegisterForm({ preview = false }: { preview?: boolean }) {
+export function RegisterForm() {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [usernameError, setUsernameError] = useState<string>();
@@ -34,7 +34,6 @@ export function RegisterForm({ preview = false }: { preview?: boolean }) {
       setError(null);
       setUsernameError(undefined);
       if (!validate(event.currentTarget)) return;
-      if (preview) { dispatch(showModal('registrationSuccess')); return; }
       void run(async () => {
         try { await authService.signUp(name.trim(), username.trim(), email.trim(), password); }
         catch (error) {

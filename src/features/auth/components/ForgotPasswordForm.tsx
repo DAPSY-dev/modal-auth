@@ -8,7 +8,7 @@ import { useAuthRequest } from '../useAuthRequest';
 import { useFieldValidation } from '../useFieldValidation';
 import { validateEmail } from '../validation';
 
-export function ForgotPasswordForm({ preview = false }: { preview?: boolean }) {
+export function ForgotPasswordForm() {
   const [email, setEmail] = useState('');
   const dispatch = useAppDispatch();
   const { run, error, loading, setError } = useAuthRequest();
@@ -20,7 +20,6 @@ export function ForgotPasswordForm({ preview = false }: { preview?: boolean }) {
       if (loading) return;
       setError(null);
       if (!validate(event.currentTarget)) return;
-      if (preview) { dispatch(showModal('forgotPasswordSuccess')); return; }
       void run(async () => {
         await authService.requestPasswordReset(email.trim());
         dispatch(showModal('forgotPasswordSuccess'));
