@@ -1,0 +1,15 @@
+@use "sass:map";
+@use "sass:math";
+@use "variables" as *;
+
+@function strip-unit($value) {
+  @return math.div($value, $value * 0 + 1);
+}
+
+@function em($px, $context) {
+  @return math.div($px, $context) * 1em;
+}
+
+@function rem($px) {
+  @return math.div($px, $base-font-size) * 1rem;
+}

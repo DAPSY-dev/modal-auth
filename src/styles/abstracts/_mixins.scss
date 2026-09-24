@@ -1,0 +1,69 @@
+@use "sass:list";
+@use "sass:map";
+@use "variables" as *;
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @content;
+    }
+  }
+}
+
+@mixin reduce-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+@mixin screen-from($breakpoint) {
+  @media (min-width: map.get($breakpoints, $breakpoint)) {
+    @content;
+  }
+}
+
+@mixin screen-until($breakpoint) {
+  @media (max-width: calc(#{map.get($breakpoints, $breakpoint)} - 0.02px)) {
+    @content;
+  }
+}
+
+@mixin screen-between($min, $max) {
+  @media (min-width: map.get($breakpoints, $min)) and
+         (max-width: calc(#{map.get($breakpoints, $max)} - 0.02px)) {
+    @content;
+  }
+}
+
+@mixin screen-only($breakpoint) {
+  $keys: map.keys($breakpoints);
+  $index: list.index($keys, $breakpoint);
+
+  @if $index == list.length($keys) {
+    @include screen-from($breakpoint) {
+      @content;
+    }
+  } @else {
+    @include screen-between($breakpoint, list.nth($keys, $index + 1)) {
+      @content;
+    }
+  }
+}
+
+@mixin screen-landscape {
+  @media (orientation: landscape) {
+    @content;
+  }
+}
+
+@mixin screen-portrait {
+  @media (orientation: portrait) {
+    @content;
+  }
+}
+
+@mixin print {
+  @media print {
+    @content;
+  }
+}

@@ -5,6 +5,7 @@ import { RouterProvider } from 'react-router/dom';
 import { createAppStore } from './app/store';
 import { router } from './app/router';
 import { startAuth } from './features/auth/startAuth';
+import './styles/main.scss';
 
 const store = createAppStore();
 const stopAuth = startAuth(store);

@@ -1,0 +1,26 @@
+@use '../abstracts/functions' as *;
+
+html {
+  font-family: var(--ma-base-font-family-primary);
+}
+
+a {
+  color: rgb(var(--ma-base-color-primary));
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--ma-base-font-family-secondary);
+}
+
+table {
+  & th,
+  & td {
+    border: rem(1px) solid rgb(var(--ma-base-color-black));
+    padding: var(--ma-base-spacing-md);
+  }
+}

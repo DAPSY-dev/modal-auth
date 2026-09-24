@@ -1,0 +1,18 @@
+.wrapper {
+  --ma-wrapper-spacing: var(--ma-base-spacing-xl);
+  --ma-wrapper-size: var(--ma-base-container-xl);
+
+  margin-inline: auto;
+  inline-size: min(
+    100% - 2 * var(--ma-wrapper-spacing),
+    var(--ma-wrapper-size)
+  );
+
+  &--spacing-md {
+    --ma-wrapper-spacing: var(--ma-base-spacing-md);
+  }
+
+  &--size-md {
+    --ma-wrapper-size: var(--ma-base-container-md);
+  }
+}

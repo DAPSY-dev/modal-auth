@@ -1,0 +1,59 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  tab-size: 4;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+}
+
+pre,
+code,
+kbd,
+samp {
+  font-family: ui-monospace, monospace;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+picture,
+img,
+svg,
+video,
+audio,
+canvas,
+iframe,
+embed,
+object {
+  display: block;
+  max-inline-size: 100%;
+}
+
+img,
+video {
+  block-size: auto;
+}
+
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}

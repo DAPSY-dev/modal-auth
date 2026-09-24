@@ -1,0 +1,129 @@
+@use '../abstracts/functions' as *;
+
+:root {
+  // Colors
+  --ma-base-color-black: 0 0 0;
+  --ma-base-color-white: 255 255 255;
+
+  --ma-base-color-gray-50: 250 250 250;
+  --ma-base-color-gray-100: 225 225 225;
+  --ma-base-color-gray-200: 200 200 200;
+  --ma-base-color-gray-300: 175 175 175;
+  --ma-base-color-gray-400: 150 150 150;
+  --ma-base-color-gray-500: 125 125 125;
+  --ma-base-color-gray-600: 100 100 100;
+  --ma-base-color-gray-700: 75 75 75;
+  --ma-base-color-gray-800: 50 50 50;
+  --ma-base-color-gray-900: 25 25 25;
+  --ma-base-color-gray-950: 15 15 15;
+
+  --ma-base-color-primary: 150 25 250;
+  --ma-base-color-secondary: 250 200 25;
+
+  --ma-base-color-info: 25 150 250;
+  --ma-base-color-error: 250 25 25;
+  --ma-base-color-warning: 250 150 25;
+  --ma-base-color-success: 25 250 100;
+
+  // Gradients
+  --ma-base-gradient-50: linear-gradient(
+    90deg,
+    rgb(var(--ma-base-color-black) / 0.5),
+    rgb(var(--ma-base-color-black) / 0)
+  );
+  --ma-base-gradient-100: linear-gradient(
+    90deg,
+    rgb(var(--ma-base-color-primary)),
+    rgb(var(--ma-base-color-secondary))
+  );
+
+  // Shadows
+  --ma-base-shadow-xs: 0 #{rem(1px)} #{rem(2px)}
+    rgb(var(--ma-base-color-black) / 0.05);
+  --ma-base-shadow-sm: 0 #{rem(1px)} #{rem(3px)}
+    rgb(var(--ma-base-color-black) / 0.1);
+  --ma-base-shadow-md: 0 #{rem(4px)} #{rem(6px)} #{rem(-1px)}
+    rgb(var(--ma-base-color-black) / 0.1);
+  --ma-base-shadow-lg: 0 #{rem(10px)} #{rem(15px)} #{rem(-3px)}
+    rgb(var(--ma-base-color-black) / 0.1);
+  --ma-base-shadow-xl: 0 #{rem(20px)} #{rem(25px)} #{rem(-5px)}
+    rgb(var(--ma-base-color-black) / 0.1);
+
+  // Typography
+  --ma-base-font-family-primary: 'Segoe UI', sans-serif;
+  --ma-base-font-family-secondary: Georgia, serif;
+
+  --ma-base-font-size-xs: #{rem(12px)};
+  --ma-base-font-size-sm: #{rem(14px)};
+  --ma-base-font-size-md: #{rem(16px)};
+  --ma-base-font-size-lg: #{rem(18px)};
+  --ma-base-font-size-xl: #{rem(20px)};
+  --ma-base-font-size-2xl: #{rem(24px)};
+  --ma-base-font-size-3xl: #{rem(28px)};
+  --ma-base-font-size-4xl: #{rem(32px)};
+  --ma-base-font-size-5xl: #{rem(36px)};
+  --ma-base-font-size-6xl: #{rem(40px)};
+  --ma-base-font-size-7xl: #{rem(48px)};
+  --ma-base-font-size-8xl: #{rem(56px)};
+  --ma-base-font-size-9xl: #{rem(64px)};
+
+  --ma-base-letter-spacing-xs: -0.05em;
+  --ma-base-letter-spacing-sm: -0.025em;
+  --ma-base-letter-spacing-md: 0;
+  --ma-base-letter-spacing-lg: 0.025em;
+  --ma-base-letter-spacing-xl: 0.05em;
+
+  --ma-base-line-height-xs: 1;
+  --ma-base-line-height-sm: 1.125;
+  --ma-base-line-height-md: 1.25;
+  --ma-base-line-height-lg: 1.5;
+  --ma-base-line-height-xl: 1.75;
+
+  // Spacing
+  --ma-base-spacing-xs: #{rem(2px)};
+  --ma-base-spacing-sm: #{rem(4px)};
+  --ma-base-spacing-md: #{rem(8px)};
+  --ma-base-spacing-lg: #{rem(12px)};
+  --ma-base-spacing-xl: #{rem(16px)};
+  --ma-base-spacing-2xl: #{rem(24px)};
+  --ma-base-spacing-3xl: #{rem(32px)};
+  --ma-base-spacing-4xl: #{rem(40px)};
+  --ma-base-spacing-5xl: #{rem(48px)};
+  --ma-base-spacing-6xl: #{rem(56px)};
+  --ma-base-spacing-7xl: #{rem(64px)};
+  --ma-base-spacing-8xl: #{rem(72px)};
+  --ma-base-spacing-9xl: #{rem(80px)};
+
+  // Containers
+  --ma-base-container-sm: #{rem(640px)};
+  --ma-base-container-md: #{rem(768px)};
+  --ma-base-container-lg: #{rem(1024px)};
+  --ma-base-container-xl: #{rem(1280px)};
+  --ma-base-container-2xl: #{rem(1536px)};
+
+  // Border Radius
+  --ma-base-radius-xs: #{rem(2px)};
+  --ma-base-radius-sm: #{rem(4px)};
+  --ma-base-radius-md: #{rem(8px)};
+  --ma-base-radius-lg: #{rem(12px)};
+  --ma-base-radius-xl: #{rem(16px)};
+  --ma-base-radius-2xl: #{rem(24px)};
+  --ma-base-radius-3xl: #{rem(32px)};
+  --ma-base-radius-4xl: #{rem(40px)};
+  --ma-base-radius-5xl: #{rem(48px)};
+  --ma-base-radius-6xl: #{rem(56px)};
+  --ma-base-radius-7xl: #{rem(64px)};
+  --ma-base-radius-8xl: #{rem(72px)};
+  --ma-base-radius-9xl: #{rem(80px)};
+  --ma-base-radius-full: 9999px;
+
+  // Z-Index
+  --ma-base-layer-sticky: 100;
+  --ma-base-layer-floating: 200;
+  --ma-base-layer-overlay: 300;
+
+  // Durations
+  --ma-base-duration-fast: 150ms;
+  --ma-base-duration-normal: 250ms;
+  --ma-base-duration-slow: 400ms;
+}
