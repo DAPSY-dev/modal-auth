@@ -14,17 +14,7 @@ export function Header() {
       <Link to="/" aria-label="Authentication demo home">
         Authentication demo
       </Link>
-      <Link to="/ui">UI showcase</Link>
       <nav aria-label="Account">
-        {user && (
-          <Button
-            type="button"
-            disabled={busy}
-            onClick={() => dispatch(showModal('changePassword'))}
-          >
-            Change password
-          </Button>
-        )}
         <Button
           disabled={status === 'initializing' || busy}
           onClick={() => {
