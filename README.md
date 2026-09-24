@@ -133,7 +133,7 @@ Forms use custom field validation instead of browser validation popups. Each fie
 - `src/test/`: behavior tests mocking the auth service, plus session-startup, service-boundary, and Edge Function handler tests. jsdom stubs the native dialog API; actual browser focus containment relies on native dialog support.
 - `supabase/`: private username registry migration, transactional SQL checks, and the username login Edge Function.
 
-The remembered preference stores only `{ email, name }` after successful password login. Logout retains it. **Not you?** clears it. This is a convenience preference, not authentication; avoid remembering an identity on a shared browser if that information should not remain visible. Storage failures do not prevent login.
+The remembered preference stores only `{ email, name }` after successful password login, email-verification sign-in, or restoration of a verified session. Logout retains it. **Not you?** clears it. This is a convenience preference, not authentication; avoid remembering an identity on a shared browser if that information should not remain visible. Storage failures do not prevent login.
 
 Supabase alone stores and refreshes its authentication tokens. Redux contains only a minimal user identity, status, and UI state. A non-secret recovery-pending flag in session storage preserves the reset flow across refreshes in the same tab. No passwords or SDK tokens are manually copied to storage or Redux.
 

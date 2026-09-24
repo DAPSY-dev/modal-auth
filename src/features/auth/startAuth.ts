@@ -2,6 +2,7 @@ import type { AppStore } from '../../app/store';
 import { authService, getAuthError, type SessionState } from '../../services/authService';
 import { isSupabaseConfigured } from '../../services/supabase';
 import { sessionReceived, startupFailed } from './authSlice';
+import { setRememberedUser } from '../../storage/rememberedUserStorage';
 
 export function startAuth(store: AppStore) {
   if (!isSupabaseConfigured) {
@@ -12,7 +13,11 @@ export function startAuth(store: AppStore) {
   let version = 0;
   let unsubscribe = () => {};
   const receive = (state: SessionState) => {
-    if (active) { version++; store.dispatch(sessionReceived(state)); }
+    if (active) {
+      version++;
+      if (state.user && !state.recovery && !state.invalidLink) setRememberedUser(state.user);
+      store.dispatch(sessionReceived(state));
+    }
   };
   try {
     unsubscribe = authService.subscribe(receive);

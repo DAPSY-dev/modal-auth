@@ -26,6 +26,9 @@ const slice = createSlice({
       state.startupError = null;
       state.user = payload.user;
       state.recovery = payload.recovery;
+      if (payload.user && !payload.recovery && !payload.invalidLink) {
+        state.rememberedUser = { email: payload.user.email, name: payload.user.name };
+      }
       if (payload.invalidLink) state.modal = 'callbackError';
       else if (payload.recovery) state.modal = 'resetPassword';
     },
