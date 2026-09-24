@@ -1,3 +1,4 @@
+import { Button } from '../../../components/Button';
 import { useState } from 'react';
 import { Input } from '../../../components/Input';
 import { useAppDispatch } from '../../../app/store';
@@ -47,7 +48,7 @@ export function ChangePasswordForm({ preview = false }: { preview?: boolean }) {
         <Input {...field('password')} label="New password" name="password" type="password" autoComplete="new-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
         <Input {...field('confirmation')} label="Confirm new password" name="confirmation" type="password" autoComplete="new-password" required value={confirmation} onChange={(e) => setConfirmation(e.target.value)} />
         <p>Use at least 8 characters.</p>
-        <button type="submit">{loading ? 'Saving…' : 'Save new password'}</button>
+        <Button type="submit">{loading ? 'Saving…' : 'Save new password'}</Button>
       </fieldset>
       {error && <p role="alert">{error}</p>}
     </form>

@@ -1,3 +1,4 @@
+import { Button } from '../components/Button';
 import { useEffect } from 'react';
 import { Input } from '../components/Input';
 import { Modal } from '../components/Modal';
@@ -11,7 +12,7 @@ export function UsernameRecoveryPreview({ onClose }: { onClose: () => void }) {
     <p id="username-recovery-notice">This is a dummy modal for UI preview only. No email will be sent.</p>
     <form noValidate aria-label="Username recovery preview" aria-describedby="username-recovery-notice" onSubmit={(event) => event.preventDefault()}>
       <Input label="Email" name="email" type="email" autoComplete="email" />
-      <button type="submit" disabled>Send username</button>
+      <Button type="submit" disabled>Send username</Button>
     </form>
   </Modal>;
 }

@@ -1,3 +1,4 @@
+import { Button } from '../../../components/Button';
 import { useState } from 'react';
 import { Input } from '../../../components/Input';
 import { useAppDispatch } from '../../../app/store';
@@ -40,10 +41,10 @@ export function LoginForm({ rememberedUser, onSwitchAccount, preview = false }: 
           {rememberedUser ? <p>{rememberedUser.email}</p> :
             <Input {...field('identifier')} label="Username or email" name="identifier" type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} required value={identifier} onChange={(e) => setIdentifier(e.target.value)} />}
           <Input {...field('password')} label="Password" name="password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} />
-          <button type="submit">{loading ? 'Logging in…' : 'Log in'}</button>
-          {onSwitchAccount && <button type="button" onClick={onSwitchAccount}>Not you?</button>}
-          <button type="button" onClick={() => dispatch(showModal('forgotPassword'))}>Forgot password?</button>
-          <button type="button" onClick={() => dispatch(showModal('register'))}>Register</button>
+          <Button type="submit">{loading ? 'Logging in…' : 'Log in'}</Button>
+          {onSwitchAccount && <Button type="button" onClick={onSwitchAccount}>Not you?</Button>}
+          <Button type="button" onClick={() => dispatch(showModal('forgotPassword'))}>Forgot password?</Button>
+          <Button type="button" onClick={() => dispatch(showModal('register'))}>Register</Button>
         </fieldset>
         {error && <p role="alert">{error}</p>}
       </form>

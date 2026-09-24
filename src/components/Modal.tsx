@@ -1,3 +1,4 @@
+import { Button } from './Button';
 import { useEffect, useRef, type ReactNode } from 'react';
 
 export function Modal({ children, onClose, busy }: { children: ReactNode; onClose: () => void; busy: boolean }) {
@@ -17,7 +18,7 @@ export function Modal({ children, onClose, busy }: { children: ReactNode; onClos
       if (!busy) onClose();
     }}>
       {children}
-      <button type="button" disabled={busy} onClick={onClose}>Close</button>
+      <Button type="button" disabled={busy} onClick={onClose}>Close</Button>
     </dialog>
   );
 }

@@ -1,3 +1,4 @@
+import { Button } from '../../../components/Button';
 import { useEffect, useRef, useState } from 'react';
 import { Input } from '../../../components/Input';
 import { useAppDispatch } from '../../../app/store';
@@ -52,8 +53,8 @@ export function RegisterForm({ preview = false }: { preview?: boolean }) {
         <Input {...field('email')} label="Email" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         <Input {...field('password')} label="Password" name="password" type="password" autoComplete="new-password" required aria-describedby="password-requirements" value={password} onChange={(e) => setPassword(e.target.value)} />
         <p id="password-requirements">Use at least 8 characters.</p>
-        <button type="submit">{loading ? 'Creating account…' : 'Create account'}</button>
-        <button type="button" onClick={() => dispatch(showModal('login'))}>Back to login</button>
+        <Button type="submit">{loading ? 'Creating account…' : 'Create account'}</Button>
+        <Button type="button" onClick={() => dispatch(showModal('login'))}>Back to login</Button>
       </fieldset>
       {error && <p role="alert">{error}</p>}
     </form>

@@ -1,3 +1,4 @@
+import { Button } from '../components/Button';
 import { useState } from 'react';
 import { Provider } from 'react-redux';
 import { Link } from 'react-router';
@@ -34,10 +35,10 @@ function ModalShowcase() {
       <p>Preview mode uses sample data. Forms validate normally, but submissions are simulated and do not change your account or send emails.</p>
       <ul>
         {modalPreviews.map(({ state, label }) => <li key={state}>
-          <button type="button" onClick={() => dispatch(showModal(state))}>{label}</button>
+          <Button type="button" onClick={() => dispatch(showModal(state))}>{label}</Button>
         </li>)}
-        <li><button type="button" onClick={() => setShowUsernameRecovery(true)}>Username recovery (dummy)</button></li>
-        <li><button type="button" onClick={() => setShowAccountFrozen(true)}>Account frozen (dummy)</button></li>
+        <li><Button type="button" onClick={() => setShowUsernameRecovery(true)}>Username recovery (dummy)</Button></li>
+        <li><Button type="button" onClick={() => setShowAccountFrozen(true)}>Account frozen (dummy)</Button></li>
       </ul>
     </main>
     <AuthModal preview />

@@ -1,3 +1,4 @@
+import { Button } from '../../../components/Button';
 import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/store';
 import { Modal } from '../../../components/Modal';
@@ -52,12 +53,12 @@ export function AuthModal({ preview = false }: { preview?: boolean }) {
     case 'callbackError': view = <>
       <h2 id="auth-title" tabIndex={-1}>This link is invalid or has expired</h2>
       <p role="alert">Please request a new password-reset email, or log in if you have already verified your account.</p>
-      <button disabled={busy} onClick={() => {
+      <Button disabled={busy} onClick={() => {
         if (preview) { dispatch(showModal('forgotPassword')); return; }
         void run(async () => {
         await authService.signOut(); dispatch(signedOut()); dispatch(showModal('forgotPassword'));
         });
-      }}>Request a new reset link</button>
+      }}>Request a new reset link</Button>
     </>; break;
   }
   return <Modal busy={busy} onClose={close}>

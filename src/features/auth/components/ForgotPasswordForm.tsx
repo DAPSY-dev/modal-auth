@@ -1,3 +1,4 @@
+import { Button } from '../../../components/Button';
 import { useState } from 'react';
 import { Input } from '../../../components/Input';
 import { useAppDispatch } from '../../../app/store';
@@ -28,8 +29,8 @@ export function ForgotPasswordForm({ preview = false }: { preview?: boolean }) {
       <fieldset disabled={loading}>
         <legend>Recovery email</legend>
         <Input {...field('email')} label="Email" name="email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
-        <button type="submit">{loading ? 'Sending instructions…' : 'Send reset instructions'}</button>
-        <button type="button" onClick={() => dispatch(showModal('login'))}>Back to login</button>
+        <Button type="submit">{loading ? 'Sending instructions…' : 'Send reset instructions'}</Button>
+        <Button type="button" onClick={() => dispatch(showModal('login'))}>Back to login</Button>
       </fieldset>
       {error && <p role="alert">{error}</p>}
     </form>

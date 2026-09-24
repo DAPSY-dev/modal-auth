@@ -21,6 +21,16 @@ For example, `public/images/hero.webp` is referenced as `/images/hero.webp` in J
 
 The `images/` and `favicons/` folders are ready to use; the root files shown above are examples to add when needed.
 
+## Buttons
+
+All buttons use `src/components/Button.tsx`. The component accepts native button props, including `disabled`, `onClick`, `className`, and `ref`. It defaults to `type="button"`; form submission buttons explicitly use `type="submit"`.
+
+```tsx
+<Button type="submit">Save</Button>
+<Button onClick={onClose}>Close</Button>
+<Button onClick={onBack}>Back to login</Button>
+```
+
 ## SVG icons
 
 Place SVG source files in `src/assets/icons/` using lowercase kebab-case names and a `viewBox`. Run `npm run icons` to regenerate `public/icons.svg`; this also runs automatically before `npm run dev` and `npm run build`. After adding or editing icons while the dev server is running, rerun `npm run icons` and refresh the page.
