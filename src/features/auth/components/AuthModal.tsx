@@ -12,6 +12,7 @@ import { ForgotPasswordForm } from './ForgotPasswordForm';
 import { ForgotPasswordSuccess } from './ForgotPasswordSuccess';
 import { ResetPasswordForm } from './ResetPasswordForm';
 import { ResetPasswordSuccess } from './ResetPasswordSuccess';
+import { ChangePasswordForm } from './ChangePasswordForm';
 
 export function AuthModal({ preview = false }: { preview?: boolean }) {
   const { modal, rememberedUser, recovery, busy } = useAppSelector((state) => state.auth);
@@ -43,6 +44,11 @@ export function AuthModal({ preview = false }: { preview?: boolean }) {
     case 'forgotPasswordSuccess': view = <ForgotPasswordSuccess />; break;
     case 'resetPassword': view = <ResetPasswordForm preview={preview} />; break;
     case 'resetPasswordSuccess': view = <ResetPasswordSuccess />; break;
+    case 'changePassword': view = <ChangePasswordForm preview={preview} />; break;
+    case 'changePasswordSuccess': view = <>
+      <h2 id="auth-title" tabIndex={-1}>Password changed</h2>
+      <p role="status">Your password has been changed successfully.</p>
+    </>; break;
     case 'callbackError': view = <>
       <h2 id="auth-title" tabIndex={-1}>This link is invalid or has expired</h2>
       <p role="alert">Please request a new password-reset email, or log in if you have already verified your account.</p>

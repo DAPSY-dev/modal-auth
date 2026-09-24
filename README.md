@@ -43,6 +43,7 @@ This is a Vite app, not a PHP application. Being in an XAMPP folder does not mak
 3. Set the Site URL to `http://127.0.0.1:5173/` and allow the redirect URL `http://127.0.0.1:5173/` in Authentication → URL Configuration. Add any other exact origins used for development or deployment.
 4. Keep the default confirmation and recovery email templates using `{{ .ConfirmationURL }}`. Configure email delivery/SMTP as appropriate for your project. Supabase's built-in email delivery can restrict recipients and impose rate limits.
 5. Set a minimum password length of at least 8 in Supabase. The forms also enforce 8 characters; Supabase enforces any additional configured password rules.
+6. In **Authentication → Sign In / Providers → Email**, enable **Require current password when updating** (enabled for the connected project). The Change password modal sends `current_password` with the new password so Supabase checks it on the server. Recovery sessions remain exempt from this requirement.
 
 Name is stored in the auth user's `user_metadata.name`. Username authentication also needs the migration and Edge Function below.
 

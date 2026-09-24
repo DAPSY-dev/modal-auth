@@ -13,6 +13,7 @@ export function App() {
       <a href="/" aria-label="Authentication demo home">Authentication demo</a>
       <a href="/ui">UI showcase</a>
       <nav aria-label="Account">
+        {user && <button type="button" disabled={busy} onClick={() => dispatch(showModal('changePassword'))}>Change password</button>}
         <button disabled={status === 'initializing' || busy} onClick={() => {
           if (!user) { dispatch(showModal('login')); return; }
           void run(async () => { await authService.signOut(); dispatch(signedOut()); });

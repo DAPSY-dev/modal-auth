@@ -11,7 +11,7 @@ import { getRememberedUser, setRememberedUser } from '../storage/rememberedUserS
 
 vi.mock('../services/authService', async (original) => ({
   ...await original<typeof import('../services/authService')>(),
-  authService: { signIn: vi.fn(), signUp: vi.fn(), signOut: vi.fn(), requestPasswordReset: vi.fn(), updatePassword: vi.fn() },
+  authService: { signIn: vi.fn(), signUp: vi.fn(), signOut: vi.fn(), requestPasswordReset: vi.fn(), updatePassword: vi.fn(), changePassword: vi.fn() },
 }));
 
 const realUser = { id: 'existing-user', name: 'Existing user', email: 'existing@example.com' };
@@ -30,6 +30,8 @@ beforeEach(() => {
 });
 
 it.each([
+  ['Change password', 'Change password'],
+  ['Password change success', 'Password changed'],
   ['Login', 'Log in'],
   ['Welcome back', 'Welcome back, Alex'],
   ['Register', 'Create an account'],
@@ -51,6 +53,19 @@ it.each([
   expect(store.getState().auth.user).toEqual(realUser);
   expect(store.getState().auth.modal).toBeNull();
   expect(authService.signOut).not.toHaveBeenCalled();
+});
+
+it('simulates password changes without updating the real account', async () => {
+  const { user, store } = setup();
+  await user.click(screen.getByRole('button', { name: 'Change password' }));
+  const dialog = within(screen.getByRole('dialog'));
+  await user.type(dialog.getByLabelText('Old password'), 'sample-old-password');
+  await user.type(dialog.getByLabelText('New password'), 'sample-password');
+  await user.type(dialog.getByLabelText('Confirm new password'), 'sample-password');
+  await user.click(dialog.getByRole('button', { name: 'Save new password' }));
+  expect(dialog.getByRole('heading', { name: 'Password changed' })).toBeInTheDocument();
+  expect(authService.changePassword).not.toHaveBeenCalled();
+  expect(store.getState().auth.user).toEqual(realUser);
 });
 
 it('simulates form transitions without changing auth state, storage, or calling Supabase', async () => {

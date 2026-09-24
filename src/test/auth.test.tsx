@@ -12,7 +12,7 @@ vi.mock('../services/supabase', () => ({ isSupabaseConfigured: true }));
 
 vi.mock('../services/authService', async (original) => ({
   ...await original<typeof import('../services/authService')>(),
-  authService: { signIn: vi.fn(), signUp: vi.fn(), signOut: vi.fn(), requestPasswordReset: vi.fn(), updatePassword: vi.fn() },
+  authService: { signIn: vi.fn(), signUp: vi.fn(), signOut: vi.fn(), requestPasswordReset: vi.fn(), updatePassword: vi.fn(), changePassword: vi.fn() },
 }));
 
 const john = { id: 'user-1', name: 'John', email: 'john@example.com' };
@@ -32,6 +32,36 @@ async function openLogin(user: ReturnType<typeof userEvent.setup>) {
 beforeEach(() => { localStorage.clear(); vi.resetAllMocks(); });
 
 describe('authentication dialogs', () => {
+  it('changes a signed-in user password with field validation and preserves their session', async () => {
+    const { user, store } = setup();
+    expect(screen.queryByRole('button', { name: 'Change password' })).not.toBeInTheDocument();
+    act(() => { store.dispatch(sessionReceived({ user: john, recovery: false, invalidLink: false })); });
+    await user.click(screen.getByRole('button', { name: 'Change password' }));
+    const dialog = within(screen.getByRole('dialog'));
+    await user.click(dialog.getByRole('button', { name: 'Save new password' }));
+    expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
+    expect(dialog.getByLabelText('New password')).toHaveAccessibleDescription('Please enter a new password.');
+    expect(dialog.getByLabelText('Confirm new password')).toHaveAccessibleDescription('Please confirm your new password.');
+    expect(authService.changePassword).not.toHaveBeenCalled();
+    expect(dialog.getByLabelText('Old password')).toHaveAccessibleDescription('Please enter your old password.');
+    expect(dialog.getByLabelText('Old password')).toHaveFocus();
+    await user.type(dialog.getByLabelText('Old password'), 'old-password');
+    await user.type(dialog.getByLabelText('New password'), 'new-password');
+    await user.type(dialog.getByLabelText('Confirm new password'), 'new-password');
+    vi.mocked(authService.changePassword).mockRejectedValueOnce({ code: 'current_password_invalid' });
+    await user.click(dialog.getByRole('button', { name: 'Save new password' }));
+    expect(dialog.getByLabelText('Old password')).toHaveAccessibleDescription('Your old password is incorrect. Please try again.');
+    await user.clear(dialog.getByLabelText('Old password'));
+    await user.type(dialog.getByLabelText('Old password'), 'correct-password');
+    vi.mocked(authService.changePassword).mockRejectedValueOnce({ code: 'same_password' });
+    await user.click(dialog.getByRole('button', { name: 'Save new password' }));
+    expect(await dialog.findByRole('alert')).toHaveTextContent('different from your current password');
+    await user.click(dialog.getByRole('button', { name: 'Save new password' }));
+    expect(await dialog.findByRole('heading', { name: 'Password changed' })).toBeInTheDocument();
+    expect(authService.changePassword).toHaveBeenLastCalledWith('correct-password', 'new-password');
+    expect(authService.signOut).not.toHaveBeenCalled();
+    expect(store.getState().auth.user).toEqual(john);
+  });
   it('accepts a username as a login identifier', async () => {
     vi.mocked(authService.signIn).mockResolvedValue(john);
     const { user } = setup();

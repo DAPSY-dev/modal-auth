@@ -17,6 +17,8 @@ export const modalPreviews: { state: Exclude<AuthModalState, null>; label: strin
   { state: 'forgotPasswordSuccess', label: 'Password reset email sent' },
   { state: 'resetPassword', label: 'Reset password' },
   { state: 'resetPasswordSuccess', label: 'Password reset success' },
+  { state: 'changePassword', label: 'Change password' },
+  { state: 'changePasswordSuccess', label: 'Password change success' },
   { state: 'callbackError', label: 'Invalid or expired link' },
 ];
 

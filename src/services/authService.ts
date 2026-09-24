@@ -154,4 +154,13 @@ export const authService = {
     const { error } = await getSupabase().auth.updateUser({ password });
     if (error) throw error;
   },
+  async changePassword(oldPassword: string, password: string) {
+    const { data, error: sessionError } = await getSupabase().auth.getSession();
+    if (sessionError) throw sessionError;
+    if (recoveryPending || callbackFailed || registrationPending || !toUser(data.session?.user)) {
+      throw new AuthFlowError('Please log in before changing your password.');
+    }
+    const { error } = await getSupabase().auth.updateUser({ password, current_password: oldPassword });
+    if (error) throw error;
+  },
 };

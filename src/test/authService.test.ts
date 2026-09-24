@@ -9,6 +9,23 @@ vi.mock('../services/supabase', () => ({ isSupabaseConfigured: true, getSupabase
 
 const verifiedUser = { id: '1', email: 'john@example.com', email_confirmed_at: '2026-01-01', user_metadata: { name: 'John' } };
 
+it('changes a verified signed-in user password without signing out', async () => {
+  sdk.getSession.mockResolvedValue({ data: { session: { user: verifiedUser } }, error: null });
+  sdk.updateUser.mockResolvedValue({ error: null });
+  const { authService } = await import('../services/authService');
+  await authService.changePassword('old-password', 'new-password');
+  expect(sdk.updateUser).toHaveBeenCalledWith({ password: 'new-password', current_password: 'old-password' });
+  expect(sdk.signOut).not.toHaveBeenCalled();
+});
+
+it.each(['signed-out', 'recovery'])('rejects account password changes during %s', async (mode) => {
+  if (mode === 'recovery') sessionStorage.setItem('modal-auth.recovery-pending', 'true');
+  sdk.getSession.mockResolvedValue({ data: { session: mode === 'recovery' ? { user: verifiedUser } : null }, error: null });
+  const { authService } = await import('../services/authService');
+  await expect(authService.changePassword('old-password', 'new-password')).rejects.toThrow('Please log in');
+  expect(sdk.updateUser).not.toHaveBeenCalled();
+});
+
 beforeEach(() => {
   vi.resetModules(); vi.resetAllMocks();
   sessionStorage.clear();

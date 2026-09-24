@@ -15,5 +15,7 @@ export type AuthModalState =
   | 'forgotPasswordSuccess'
   | 'resetPassword'
   | 'resetPasswordSuccess'
+  | 'changePassword'
+  | 'changePasswordSuccess'
   | 'callbackError'
   | null;
