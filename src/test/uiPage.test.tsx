@@ -66,7 +66,9 @@ it.each([
   'opens the %s modal directly and returns focus on close',
   async (button, heading) => {
     const { user, store } = setup();
-    const trigger = screen.getByRole('button', { name: button });
+    const trigger = within(screen.getByRole('main')).getByRole('button', {
+      name: button,
+    });
     await user.click(trigger);
     const dialog = within(screen.getByRole('dialog'));
     expect(dialog.getByRole('heading', { name: heading })).toHaveFocus();
@@ -85,7 +87,11 @@ it.each([
 
 it('submits password changes through the real service', async () => {
   const { user, store } = setup();
-  await user.click(screen.getByRole('button', { name: 'Change password' }));
+  await user.click(
+    within(screen.getByRole('main')).getByRole('button', {
+      name: 'Change password',
+    }),
+  );
   const dialog = within(screen.getByRole('dialog'));
   await user.type(dialog.getByLabelText('Old password'), 'sample-old-password');
   await user.type(dialog.getByLabelText('New password'), 'sample-password');
@@ -106,7 +112,9 @@ it('submits password changes through the real service', async () => {
 
 it('submits registration, login, email, and reset actions through the shared service', async () => {
   const { user, store } = setup();
-  await user.click(screen.getByRole('button', { name: 'Register' }));
+  await user.click(
+    within(screen.getByRole('main')).getByRole('button', { name: 'Register' }),
+  );
   let dialog = within(screen.getByRole('dialog'));
   await user.click(dialog.getByRole('button', { name: 'Create account' }));
   expect(dialog.getByLabelText('Username')).toHaveAttribute(
@@ -128,7 +136,11 @@ it('submits registration, login, email, and reset actions through the shared ser
   await user.click(dialog.getByRole('button', { name: 'Log in' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
-  await user.click(screen.getByRole('button', { name: 'Forgot password' }));
+  await user.click(
+    within(screen.getByRole('main')).getByRole('button', {
+      name: 'Forgot password',
+    }),
+  );
   dialog = within(screen.getByRole('dialog'));
   await user.type(dialog.getByLabelText('Email'), 'demo@example.com');
   await user.click(
@@ -139,7 +151,11 @@ it('submits registration, login, email, and reset actions through the shared ser
   ).toBeInTheDocument();
   await user.click(dialog.getByRole('button', { name: 'Close' }));
 
-  await user.click(screen.getByRole('button', { name: 'Reset password' }));
+  await user.click(
+    within(screen.getByRole('main')).getByRole('button', {
+      name: 'Reset password',
+    }),
+  );
   dialog = within(screen.getByRole('dialog'));
   await user.type(dialog.getByLabelText('New password'), 'sample-password');
   await user.type(
@@ -174,7 +190,11 @@ it('submits registration, login, email, and reset actions through the shared ser
 
 it('switches away from the sample remembered user without clearing the real preference', async () => {
   const { user } = setup();
-  await user.click(screen.getByRole('button', { name: 'Welcome back' }));
+  await user.click(
+    within(screen.getByRole('main')).getByRole('button', {
+      name: 'Welcome back',
+    }),
+  );
   const dialog = within(screen.getByRole('dialog'));
   expect(dialog.getByText('alex@example.com')).toBeInTheDocument();
   await user.click(dialog.getByRole('button', { name: 'Not you?' }));
@@ -188,7 +208,9 @@ it('switches away from the sample remembered user without clearing the real pref
 it('uses real session cleanup when leaving the invalid-link modal', async () => {
   const { user } = setup();
   await user.click(
-    screen.getByRole('button', { name: 'Invalid or expired link' }),
+    within(screen.getByRole('main')).getByRole('button', {
+      name: 'Invalid or expired link',
+    }),
   );
   const dialog = within(screen.getByRole('dialog'));
   await user.click(
@@ -202,7 +224,11 @@ it('uses real session cleanup when leaving the invalid-link modal', async () => 
 
 it('uses sample identity only for display until an actual login succeeds', async () => {
   const { user, store } = setup();
-  await user.click(screen.getByRole('button', { name: 'Welcome back' }));
+  await user.click(
+    within(screen.getByRole('main')).getByRole('button', {
+      name: 'Welcome back',
+    }),
+  );
   const dialog = within(screen.getByRole('dialog'));
   expect(store.getState().auth.rememberedUser?.email).toBe(realUser.email);
   await user.type(dialog.getByLabelText('Password'), 'sample-password');

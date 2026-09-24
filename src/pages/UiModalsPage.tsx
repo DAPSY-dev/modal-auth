@@ -1,9 +1,10 @@
+import { AuthModal } from '../features/auth/components/AuthModal';
+import { Layout } from '../components/Layout';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { Button } from '../components/Button';
 import { useAppDispatch, useAppSelector } from '../app/store';
 import { showModal } from '../features/auth/authSlice';
-import { AuthModal } from '../features/auth/components/AuthModal';
 import { LoginForm } from '../features/auth/components/LoginForm';
 import type { AuthModalState } from '../features/auth/types';
 import { UsernameRecoveryPreview } from './UsernameRecoveryPreview';
@@ -56,10 +57,8 @@ export function UiModalsPage() {
   const [dummy, setDummy] = useState<'username' | 'frozen' | null>(null);
   return (
     <>
-      <header>
+      <Layout>
         <Link to="/ui">Back to UI showcase</Link>
-      </header>
-      <main>
         <h1>Modals</h1>
         <p>
           {user
@@ -100,7 +99,7 @@ export function UiModalsPage() {
             Account frozen (dummy)
           </Button>
         </section>
-      </main>
+      </Layout>
       <AuthModal
         loginForm={
           modal === 'welcomeBack' ? (
@@ -114,6 +113,7 @@ export function UiModalsPage() {
           )
         }
       />
+
       {dummy === 'username' && (
         <UsernameRecoveryPreview onClose={() => setDummy(null)} />
       )}

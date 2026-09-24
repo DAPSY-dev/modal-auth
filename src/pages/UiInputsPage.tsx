@@ -1,13 +1,13 @@
+import { AuthModal } from '../features/auth/components/AuthModal';
+import { Layout } from '../components/Layout';
 import { Link } from 'react-router';
 import { Input } from '../components/Input';
 
 export function UiInputsPage() {
   return (
     <>
-      <header>
+      <Layout>
         <Link to="/ui">Back to UI showcase</Link>
-      </header>
-      <main>
         <h1>Inputs</h1>
         <Input label="Example text" type="text" placeholder="Enter text" />
         <Input
@@ -21,7 +21,8 @@ export function UiInputsPage() {
           error="This is an example validation error."
         />
         <Input label="Disabled input" disabled defaultValue="Disabled value" />
-      </main>
+      </Layout>
+      <AuthModal />
     </>
   );
 }

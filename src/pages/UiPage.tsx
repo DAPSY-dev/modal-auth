@@ -1,12 +1,12 @@
+import { AuthModal } from '../features/auth/components/AuthModal';
+import { Layout } from '../components/Layout';
 import { Link } from 'react-router';
 
 export function UiPage() {
   return (
     <>
-      <header>
+      <Layout>
         <Link to="/">Back to home</Link>
-      </header>
-      <main>
         <h1>UI showcase</h1>
         <p>Choose a component to explore its examples.</p>
         <nav aria-label="Component showcases">
@@ -25,7 +25,8 @@ export function UiPage() {
             </li>
           </ul>
         </nav>
-      </main>
+      </Layout>
+      <AuthModal />
     </>
   );
 }
