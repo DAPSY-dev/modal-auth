@@ -14,12 +14,18 @@ interface AuthState {
 }
 
 const initialState = (): AuthState => ({
-  user: null, status: 'initializing', modal: null,
-  rememberedUser: getRememberedUser(), recovery: false, busy: false, startupError: null,
+  user: null,
+  status: 'initializing',
+  modal: null,
+  rememberedUser: getRememberedUser(),
+  recovery: false,
+  busy: false,
+  startupError: null,
 });
 
 const slice = createSlice({
-  name: 'auth', initialState,
+  name: 'auth',
+  initialState,
   reducers: {
     sessionReceived(state, { payload }: PayloadAction<SessionState>) {
       state.status = 'ready';
@@ -27,25 +33,48 @@ const slice = createSlice({
       state.user = payload.user;
       state.recovery = payload.recovery;
       if (payload.user && !payload.recovery && !payload.invalidLink) {
-        state.rememberedUser = { email: payload.user.email, name: payload.user.name };
+        state.rememberedUser = {
+          email: payload.user.email,
+          name: payload.user.name,
+        };
       }
       if (payload.invalidLink) state.modal = 'callbackError';
       else if (payload.recovery) state.modal = 'resetPassword';
     },
     startupFailed(state, { payload }: PayloadAction<string>) {
-      state.status = 'ready'; state.startupError = payload;
+      state.status = 'ready';
+      state.startupError = payload;
     },
-    showModal(state, { payload }: PayloadAction<AuthModalState>) { state.modal = payload; },
-    setBusy(state, { payload }: PayloadAction<boolean>) { state.busy = payload; },
+    showModal(state, { payload }: PayloadAction<AuthModalState>) {
+      state.modal = payload;
+    },
+    setBusy(state, { payload }: PayloadAction<boolean>) {
+      state.busy = payload;
+    },
     signedIn(state, { payload }: PayloadAction<AuthUser>) {
       state.startupError = null;
-      state.user = payload; state.rememberedUser = { email: payload.email, name: payload.name };
-      state.modal = null; state.recovery = false;
+      state.user = payload;
+      state.rememberedUser = { email: payload.email, name: payload.name };
+      state.modal = null;
+      state.recovery = false;
     },
-    signedOut(state) { state.user = null; state.recovery = false; },
-    forgetUser(state) { state.rememberedUser = null; },
+    signedOut(state) {
+      state.user = null;
+      state.recovery = false;
+    },
+    forgetUser(state) {
+      state.rememberedUser = null;
+    },
   },
 });
 
-export const { sessionReceived, startupFailed, showModal, setBusy, signedIn, signedOut, forgetUser } = slice.actions;
+export const {
+  sessionReceived,
+  startupFailed,
+  showModal,
+  setBusy,
+  signedIn,
+  signedOut,
+  forgetUser,
+} = slice.actions;
 export default slice.reducer;

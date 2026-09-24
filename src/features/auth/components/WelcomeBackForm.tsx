@@ -6,7 +6,14 @@ import { LoginForm } from './LoginForm';
 
 export function WelcomeBackForm({ user }: { user: RememberedUser }) {
   const dispatch = useAppDispatch();
-  return <LoginForm rememberedUser={user} onSwitchAccount={() => {
-    clearRememberedUser(); dispatch(forgetUser()); dispatch(showModal('login'));
-  }} />;
+  return (
+    <LoginForm
+      rememberedUser={user}
+      onSwitchAccount={() => {
+        clearRememberedUser();
+        dispatch(forgetUser());
+        dispatch(showModal('login'));
+      }}
+    />
+  );
 }

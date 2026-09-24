@@ -11,5 +11,9 @@ const stopAuth = startAuth(store);
 if (import.meta.hot) import.meta.hot.dispose(stopAuth);
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode><Provider store={store}><RouterProvider router={router} /></Provider></StrictMode>,
+  <StrictMode>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </StrictMode>,
 );

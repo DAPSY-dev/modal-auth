@@ -21,6 +21,10 @@ For example, `public/images/hero.webp` is referenced as `/images/hero.webp` in J
 
 The `images/` and `favicons/` folders are ready to use; the root files shown above are examples to add when needed.
 
+## Formatting
+
+Run `npm run format` to format supported project files, or `npm run format:check` to check formatting without changing files. Prettier uses single quotes and LF line endings. Generated files, dependencies, lockfiles, and environment files are excluded. Editors with a Prettier extension can use the project's local version and configuration.
+
 ## Buttons
 
 All buttons use `src/components/Button.tsx`. The component accepts native button props, including `disabled`, `onClick`, `className`, and `ref`. It defaults to `type="button"`; form submission buttons explicitly use `type="submit"`.

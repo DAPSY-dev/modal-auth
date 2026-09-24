@@ -1,12 +1,20 @@
 import type { AppStore } from '../../app/store';
-import { authService, getAuthError, type SessionState } from '../../services/authService';
+import {
+  authService,
+  getAuthError,
+  type SessionState,
+} from '../../services/authService';
 import { isSupabaseConfigured } from '../../services/supabase';
 import { sessionReceived, startupFailed } from './authSlice';
 import { setRememberedUser } from '../../storage/rememberedUserStorage';
 
 export function startAuth(store: AppStore) {
   if (!isSupabaseConfigured) {
-    store.dispatch(startupFailed('Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local, then restart the development server.'));
+    store.dispatch(
+      startupFailed(
+        'Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env.local, then restart the development server.',
+      ),
+    );
     return () => {};
   }
   let active = true;
@@ -15,18 +23,28 @@ export function startAuth(store: AppStore) {
   const receive = (state: SessionState) => {
     if (active) {
       version++;
-      if (state.user && !state.recovery && !state.invalidLink) setRememberedUser(state.user);
+      if (state.user && !state.recovery && !state.invalidLink)
+        setRememberedUser(state.user);
       store.dispatch(sessionReceived(state));
     }
   };
   try {
     unsubscribe = authService.subscribe(receive);
     const requestedVersion = version;
-    void authService.getSession().then((state) => {
-      if (version === requestedVersion) receive(state);
-    }).catch((error: unknown) => {
-      if (active && version === requestedVersion) store.dispatch(startupFailed(getAuthError(error)));
-    });
-  } catch (error) { store.dispatch(startupFailed(getAuthError(error))); }
-  return () => { active = false; unsubscribe(); };
+    void authService
+      .getSession()
+      .then((state) => {
+        if (version === requestedVersion) receive(state);
+      })
+      .catch((error: unknown) => {
+        if (active && version === requestedVersion)
+          store.dispatch(startupFailed(getAuthError(error)));
+      });
+  } catch (error) {
+    store.dispatch(startupFailed(getAuthError(error)));
+  }
+  return () => {
+    active = false;
+    unsubscribe();
+  };
 }

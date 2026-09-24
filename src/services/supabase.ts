@@ -8,12 +8,21 @@ export const isSupabaseConfigured = Boolean(
 
 export function getSupabase() {
   if (!isSupabaseConfigured) {
-    throw new Error('Add your Supabase settings to .env.local and restart the development server.');
+    throw new Error(
+      'Add your Supabase settings to .env.local and restart the development server.',
+    );
   }
   client ??= createClient(
     import.meta.env.VITE_SUPABASE_URL,
     import.meta.env.VITE_SUPABASE_ANON_KEY,
-    { auth: { flowType: 'implicit', persistSession: true, detectSessionInUrl: true, autoRefreshToken: true } },
+    {
+      auth: {
+        flowType: 'implicit',
+        persistSession: true,
+        detectSessionInUrl: true,
+        autoRefreshToken: true,
+      },
+    },
   );
   return client;
 }

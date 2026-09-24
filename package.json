@@ -4,6 +4,8 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "icons": "node scripts/generate-sprite.mjs",
     "predev": "npm run icons",
     "prebuild": "npm run icons",
@@ -29,6 +31,7 @@
     "@types/react-dom": "^19.1.9",
     "@vitejs/plugin-react": "^5.0.3",
     "jsdom": "^27.0.0",
+    "prettier": "3.9.9",
     "typescript": "~5.9.2",
     "vite": "^7.1.7",
     "vitest": "^4.1.11"

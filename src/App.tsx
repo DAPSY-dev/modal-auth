@@ -7,28 +7,58 @@ import { useAuthRequest } from './features/auth/useAuthRequest';
 import { Icon } from './components/Icon';
 
 export function App() {
-  const { user, status, startupError, busy } = useAppSelector((state) => state.auth);
+  const { user, status, startupError, busy } = useAppSelector(
+    (state) => state.auth,
+  );
   const dispatch = useAppDispatch();
   const { run, loading, error } = useAuthRequest();
-  return <>
-    <header>
-      <a href="/" aria-label="Authentication demo home">Authentication demo</a>
-      <a href="/ui">UI showcase</a>
-      <nav aria-label="Account">
-        {user && <Button type="button" disabled={busy} onClick={() => dispatch(showModal('changePassword'))}>Change password</Button>}
-        <Button disabled={status === 'initializing' || busy} onClick={() => {
-          if (!user) { dispatch(showModal('login')); return; }
-          void run(async () => { await authService.signOut(); dispatch(signedOut()); });
-        }}>{loading ? 'Logging out…' : user ? 'Log out' : 'Log in'}</Button>
-      </nav>
-      {error && <p role="alert">{error}</p>}
-    </header>
-    <main>
-      <p><Icon name="close-eye" label="Closed eye icon demo" /></p>
-      {status === 'initializing' ? <p role="status">Checking your session…</p> :
-        <h1>{user ? `Welcome, ${user.name}` : 'Welcome to our site'}</h1>}
-      {startupError && <p role="alert">{startupError}</p>}
-    </main>
-    <AuthModal />
-  </>;
+  return (
+    <>
+      <header>
+        <a href="/" aria-label="Authentication demo home">
+          Authentication demo
+        </a>
+        <a href="/ui">UI showcase</a>
+        <nav aria-label="Account">
+          {user && (
+            <Button
+              type="button"
+              disabled={busy}
+              onClick={() => dispatch(showModal('changePassword'))}
+            >
+              Change password
+            </Button>
+          )}
+          <Button
+            disabled={status === 'initializing' || busy}
+            onClick={() => {
+              if (!user) {
+                dispatch(showModal('login'));
+                return;
+              }
+              void run(async () => {
+                await authService.signOut();
+                dispatch(signedOut());
+              });
+            }}
+          >
+            {loading ? 'Logging out…' : user ? 'Log out' : 'Log in'}
+          </Button>
+        </nav>
+        {error && <p role="alert">{error}</p>}
+      </header>
+      <main>
+        <p>
+          <Icon name="close-eye" label="Closed eye icon demo" />
+        </p>
+        {status === 'initializing' ? (
+          <p role="status">Checking your session…</p>
+        ) : (
+          <h1>{user ? `Welcome, ${user.name}` : 'Welcome to our site'}</h1>
+        )}
+        {startupError && <p role="alert">{startupError}</p>}
+      </main>
+      <AuthModal />
+    </>
+  );
 }

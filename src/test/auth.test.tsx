@@ -1,18 +1,35 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { App } from '../App';
 import { createAppStore } from '../app/store';
 import { sessionReceived } from '../features/auth/authSlice';
 import { authService, UsernameUnavailableError } from '../services/authService';
-import { getRememberedUser, setRememberedUser } from '../storage/rememberedUserStorage';
+import {
+  getRememberedUser,
+  setRememberedUser,
+} from '../storage/rememberedUserStorage';
 
 vi.mock('../services/supabase', () => ({ isSupabaseConfigured: true }));
 
 vi.mock('../services/authService', async (original) => ({
-  ...await original<typeof import('../services/authService')>(),
-  authService: { signIn: vi.fn(), signUp: vi.fn(), signOut: vi.fn(), requestPasswordReset: vi.fn(), updatePassword: vi.fn(), changePassword: vi.fn() },
+  ...(await original<typeof import('../services/authService')>()),
+  authService: {
+    signIn: vi.fn(),
+    signUp: vi.fn(),
+    signOut: vi.fn(),
+    requestPasswordReset: vi.fn(),
+    updatePassword: vi.fn(),
+    changePassword: vi.fn(),
+  },
 }));
 
 const john = { id: 'user-1', name: 'John', email: 'john@example.com' };
@@ -20,7 +37,11 @@ const john = { id: 'user-1', name: 'John', email: 'john@example.com' };
 function setup(recovery = false) {
   const store = createAppStore();
   store.dispatch(sessionReceived({ user: null, recovery, invalidLink: false }));
-  render(<Provider store={store}><App /></Provider>);
+  render(
+    <Provider store={store}>
+      <App />
+    </Provider>,
+  );
   return { store, user: userEvent.setup() };
 }
 
@@ -29,36 +50,67 @@ async function openLogin(user: ReturnType<typeof userEvent.setup>) {
   return within(screen.getByRole('dialog'));
 }
 
-beforeEach(() => { localStorage.clear(); vi.resetAllMocks(); });
+beforeEach(() => {
+  localStorage.clear();
+  vi.resetAllMocks();
+});
 
 describe('authentication dialogs', () => {
   it('changes a signed-in user password with field validation and preserves their session', async () => {
     const { user, store } = setup();
-    expect(screen.queryByRole('button', { name: 'Change password' })).not.toBeInTheDocument();
-    act(() => { store.dispatch(sessionReceived({ user: john, recovery: false, invalidLink: false })); });
+    expect(
+      screen.queryByRole('button', { name: 'Change password' }),
+    ).not.toBeInTheDocument();
+    act(() => {
+      store.dispatch(
+        sessionReceived({ user: john, recovery: false, invalidLink: false }),
+      );
+    });
     await user.click(screen.getByRole('button', { name: 'Change password' }));
     const dialog = within(screen.getByRole('dialog'));
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
     expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
-    expect(dialog.getByLabelText('New password')).toHaveAccessibleDescription('Please enter a new password.');
-    expect(dialog.getByLabelText('Confirm new password')).toHaveAccessibleDescription('Please confirm your new password.');
+    expect(dialog.getByLabelText('New password')).toHaveAccessibleDescription(
+      'Please enter a new password.',
+    );
+    expect(
+      dialog.getByLabelText('Confirm new password'),
+    ).toHaveAccessibleDescription('Please confirm your new password.');
     expect(authService.changePassword).not.toHaveBeenCalled();
-    expect(dialog.getByLabelText('Old password')).toHaveAccessibleDescription('Please enter your old password.');
+    expect(dialog.getByLabelText('Old password')).toHaveAccessibleDescription(
+      'Please enter your old password.',
+    );
     expect(dialog.getByLabelText('Old password')).toHaveFocus();
     await user.type(dialog.getByLabelText('Old password'), 'old-password');
     await user.type(dialog.getByLabelText('New password'), 'new-password');
-    await user.type(dialog.getByLabelText('Confirm new password'), 'new-password');
-    vi.mocked(authService.changePassword).mockRejectedValueOnce({ code: 'current_password_invalid' });
+    await user.type(
+      dialog.getByLabelText('Confirm new password'),
+      'new-password',
+    );
+    vi.mocked(authService.changePassword).mockRejectedValueOnce({
+      code: 'current_password_invalid',
+    });
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
-    expect(dialog.getByLabelText('Old password')).toHaveAccessibleDescription('Your old password is incorrect. Please try again.');
+    expect(dialog.getByLabelText('Old password')).toHaveAccessibleDescription(
+      'Your old password is incorrect. Please try again.',
+    );
     await user.clear(dialog.getByLabelText('Old password'));
     await user.type(dialog.getByLabelText('Old password'), 'correct-password');
-    vi.mocked(authService.changePassword).mockRejectedValueOnce({ code: 'same_password' });
+    vi.mocked(authService.changePassword).mockRejectedValueOnce({
+      code: 'same_password',
+    });
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
-    expect(await dialog.findByRole('alert')).toHaveTextContent('different from your current password');
+    expect(await dialog.findByRole('alert')).toHaveTextContent(
+      'different from your current password',
+    );
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
-    expect(await dialog.findByRole('heading', { name: 'Password changed' })).toBeInTheDocument();
-    expect(authService.changePassword).toHaveBeenLastCalledWith('correct-password', 'new-password');
+    expect(
+      await dialog.findByRole('heading', { name: 'Password changed' }),
+    ).toBeInTheDocument();
+    expect(authService.changePassword).toHaveBeenLastCalledWith(
+      'correct-password',
+      'new-password',
+    );
     expect(authService.signOut).not.toHaveBeenCalled();
     expect(store.getState().auth.user).toEqual(john);
   });
@@ -69,12 +121,19 @@ describe('authentication dialogs', () => {
     await user.type(dialog.getByLabelText('Username or email'), 'John_Doe');
     await user.type(dialog.getByLabelText('Password'), 'test-password');
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
-    expect(authService.signIn).toHaveBeenCalledWith('John_Doe', 'test-password');
-    expect(await screen.findByRole('heading', { name: 'Welcome, John' })).toBeInTheDocument();
+    expect(authService.signIn).toHaveBeenCalledWith(
+      'John_Doe',
+      'test-password',
+    );
+    expect(
+      await screen.findByRole('heading', { name: 'Welcome, John' }),
+    ).toBeInTheDocument();
   });
 
   it('validates username format and shows a taken username error at the field', async () => {
-    vi.mocked(authService.signUp).mockRejectedValue(new UsernameUnavailableError());
+    vi.mocked(authService.signUp).mockRejectedValue(
+      new UsernameUnavailableError(),
+    );
     const { user } = setup();
     const dialog = await openLogin(user);
     await user.click(dialog.getByRole('button', { name: 'Register' }));
@@ -83,12 +142,17 @@ describe('authentication dialogs', () => {
     await user.type(dialog.getByLabelText('Email'), john.email);
     await user.type(dialog.getByLabelText('Password'), 'test-password');
     await user.click(dialog.getByRole('button', { name: 'Create account' }));
-    expect(dialog.getByLabelText('Username')).toHaveAttribute('aria-invalid', 'true');
+    expect(dialog.getByLabelText('Username')).toHaveAttribute(
+      'aria-invalid',
+      'true',
+    );
     expect(authService.signUp).not.toHaveBeenCalled();
     await user.clear(dialog.getByLabelText('Username'));
     await user.type(dialog.getByLabelText('Username'), 'john_doe');
     await user.click(dialog.getByRole('button', { name: 'Create account' }));
-    expect(await dialog.findByRole('alert')).toHaveTextContent('username is already taken');
+    expect(await dialog.findByRole('alert')).toHaveTextContent(
+      'username is already taken',
+    );
     expect(dialog.getByLabelText('Username')).toHaveFocus();
     await user.type(dialog.getByLabelText('Username'), '2');
     expect(dialog.queryByRole('alert')).not.toBeInTheDocument();
@@ -101,13 +165,17 @@ describe('authentication dialogs', () => {
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
     const email = dialog.getByLabelText(/^(Username or email|Email)$/);
     const password = dialog.getByLabelText('Password');
-    expect(email).toHaveAccessibleDescription('Please enter your username or email.');
+    expect(email).toHaveAccessibleDescription(
+      'Please enter your username or email.',
+    );
     expect(password).toHaveAccessibleDescription('Please enter your password.');
     expect(email).toHaveAttribute('aria-invalid', 'true');
     expect(email).toHaveFocus();
     expect(authService.signIn).not.toHaveBeenCalled();
     await user.type(email, 'invalid@');
-    expect(email).toHaveAccessibleDescription('Please enter a valid email address.');
+    expect(email).toHaveAccessibleDescription(
+      'Please enter a valid email address.',
+    );
     await user.clear(email);
     await user.type(email, john.email);
     expect(email).not.toHaveAttribute('aria-invalid');
@@ -126,15 +194,26 @@ describe('authentication dialogs', () => {
     expect(dialog.queryByRole('alert')).not.toBeInTheDocument();
     await user.type(dialog.getByLabelText('Name'), '   ');
     await user.tab();
-    expect(dialog.getByLabelText('Name')).toHaveAccessibleDescription('Please enter your name.');
-    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), 'invalid');
+    expect(dialog.getByLabelText('Name')).toHaveAccessibleDescription(
+      'Please enter your name.',
+    );
+    await user.type(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+      'invalid',
+    );
     await user.type(dialog.getByLabelText('Password'), 'short');
     await user.click(dialog.getByRole('button', { name: 'Create account' }));
     expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
     expect(dialog.getAllByRole('alert')).toHaveLength(4);
-    expect(dialog.getByLabelText('Username')).toHaveAccessibleDescription(expect.stringContaining('Please enter a username.'));
-    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveAccessibleDescription('Please enter a valid email address.');
-    expect(dialog.getByLabelText('Password')).toHaveAccessibleDescription('Use at least 8 characters. Use at least 8 characters for your password.');
+    expect(dialog.getByLabelText('Username')).toHaveAccessibleDescription(
+      expect.stringContaining('Please enter a username.'),
+    );
+    expect(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+    ).toHaveAccessibleDescription('Please enter a valid email address.');
+    expect(dialog.getByLabelText('Password')).toHaveAccessibleDescription(
+      'Use at least 8 characters. Use at least 8 characters for your password.',
+    );
     expect(authService.signUp).not.toHaveBeenCalled();
     expect(dialog.getByLabelText('Name')).toHaveFocus();
   });
@@ -143,11 +222,22 @@ describe('authentication dialogs', () => {
     const { user } = setup();
     const dialog = await openLogin(user);
     await user.click(dialog.getByRole('button', { name: 'Forgot password?' }));
-    await user.click(dialog.getByRole('button', { name: 'Send reset instructions' }));
-    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveAccessibleDescription('Please enter your email.');
-    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), 'wrong@');
-    await user.click(dialog.getByRole('button', { name: 'Send reset instructions' }));
-    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveAccessibleDescription('Please enter a valid email address.');
+    await user.click(
+      dialog.getByRole('button', { name: 'Send reset instructions' }),
+    );
+    expect(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+    ).toHaveAccessibleDescription('Please enter your email.');
+    await user.type(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+      'wrong@',
+    );
+    await user.click(
+      dialog.getByRole('button', { name: 'Send reset instructions' }),
+    );
+    expect(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+    ).toHaveAccessibleDescription('Please enter a valid email address.');
     expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
     expect(authService.requestPasswordReset).not.toHaveBeenCalled();
   });
@@ -157,7 +247,9 @@ describe('authentication dialogs', () => {
     const { user } = setup();
     const dialog = await openLogin(user);
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
-    expect(dialog.getByLabelText('Password')).toHaveAccessibleDescription('Please enter your password.');
+    expect(dialog.getByLabelText('Password')).toHaveAccessibleDescription(
+      'Please enter your password.',
+    );
     expect(dialog.getByLabelText('Password')).toHaveFocus();
     expect(dialog.getAllByRole('alert')).toHaveLength(1);
     expect(authService.signIn).not.toHaveBeenCalled();
@@ -170,15 +262,23 @@ describe('authentication dialogs', () => {
     const confirmation = dialog.getByLabelText('Confirm new password');
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
     expect(dialog.getByRole('form')).toHaveAttribute('novalidate');
-    expect(password).toHaveAccessibleDescription('Please enter a new password.');
-    expect(confirmation).toHaveAccessibleDescription('Please confirm your new password.');
+    expect(password).toHaveAccessibleDescription(
+      'Please enter a new password.',
+    );
+    expect(confirmation).toHaveAccessibleDescription(
+      'Please confirm your new password.',
+    );
     await user.type(password, 'short');
-    expect(password).toHaveAccessibleDescription('Use at least 8 characters for your password.');
+    expect(password).toHaveAccessibleDescription(
+      'Use at least 8 characters for your password.',
+    );
     await user.type(password, '-password');
     await user.type(confirmation, 'short-password');
     expect(confirmation).not.toHaveAttribute('aria-invalid');
     await user.type(password, '-changed');
-    expect(confirmation).toHaveAccessibleDescription('The passwords do not match.');
+    expect(confirmation).toHaveAccessibleDescription(
+      'The passwords do not match.',
+    );
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
     expect(confirmation).toHaveFocus();
     expect(authService.updatePassword).not.toHaveBeenCalled();
@@ -189,11 +289,22 @@ describe('authentication dialogs', () => {
     const dialog = await openLogin(user);
     expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toBeRequired();
     await user.click(dialog.getByRole('button', { name: 'Forgot password?' }));
-    expect(dialog.getByRole('heading', { name: 'Forgot password?' })).toHaveFocus();
-    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), john.email);
-    await user.click(dialog.getByRole('button', { name: 'Send reset instructions' }));
-    expect(await dialog.findByRole('heading', { name: 'Check your email' })).toBeInTheDocument();
-    expect(dialog.getByRole('status')).toHaveTextContent('If an account exists');
+    expect(
+      dialog.getByRole('heading', { name: 'Forgot password?' }),
+    ).toHaveFocus();
+    await user.type(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+      john.email,
+    );
+    await user.click(
+      dialog.getByRole('button', { name: 'Send reset instructions' }),
+    );
+    expect(
+      await dialog.findByRole('heading', { name: 'Check your email' }),
+    ).toBeInTheDocument();
+    expect(dialog.getByRole('status')).toHaveTextContent(
+      'If an account exists',
+    );
     await user.click(dialog.getByRole('button', { name: 'Close' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Log in' })).toHaveFocus();
@@ -203,21 +314,33 @@ describe('authentication dialogs', () => {
     vi.mocked(authService.signIn).mockResolvedValue(john);
     const { user } = setup();
     let dialog = await openLogin(user);
-    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), john.email);
+    await user.type(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+      john.email,
+    );
     await user.type(dialog.getByLabelText('Password'), 'test-password');
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
-    expect(await screen.findByRole('heading', { name: 'Welcome, John' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Welcome, John' }),
+    ).toBeInTheDocument();
     expect(getRememberedUser()).toEqual({ email: john.email, name: john.name });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Log out' }));
     expect(authService.signOut).toHaveBeenCalledOnce();
-    expect(await screen.findByRole('heading', { name: 'Welcome to our site' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Welcome to our site' }),
+    ).toBeInTheDocument();
     dialog = await openLogin(user);
     expect(dialog.getByRole('heading')).toHaveTextContent('Welcome back, John');
-    expect(dialog.queryByLabelText(/^(Username or email|Email)$/)).not.toBeInTheDocument();
+    expect(
+      dialog.queryByLabelText(/^(Username or email|Email)$/),
+    ).not.toBeInTheDocument();
     await user.type(dialog.getByLabelText('Password'), 'another-password');
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
-    expect(authService.signIn).toHaveBeenLastCalledWith(john.email, 'another-password');
+    expect(authService.signIn).toHaveBeenLastCalledWith(
+      john.email,
+      'another-password',
+    );
   });
 
   it('clears the remembered preference with Not you?', async () => {
@@ -225,17 +348,27 @@ describe('authentication dialogs', () => {
     const { user } = setup();
     const dialog = await openLogin(user);
     await user.click(dialog.getByRole('button', { name: 'Not you?' }));
-    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveValue('');
+    expect(dialog.getByLabelText(/^(Username or email|Email)$/)).toHaveValue(
+      '',
+    );
     expect(dialog.getByLabelText('Password')).toHaveValue('');
     expect(getRememberedUser()).toBeNull();
   });
 
   it('shows useful login errors and prevents duplicate requests', async () => {
     let rejectLogin!: (error: unknown) => void;
-    vi.mocked(authService.signIn).mockImplementation(() => new Promise((_, reject) => { rejectLogin = reject; }));
+    vi.mocked(authService.signIn).mockImplementation(
+      () =>
+        new Promise((_, reject) => {
+          rejectLogin = reject;
+        }),
+    );
     const { user } = setup();
     const dialog = await openLogin(user);
-    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), john.email);
+    await user.type(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+      john.email,
+    );
     await user.type(dialog.getByLabelText('Password'), 'wrong-password');
     await user.click(dialog.getByRole('button', { name: 'Log in' }));
     expect(dialog.getByRole('button', { name: 'Logging in…' })).toBeDisabled();
@@ -243,7 +376,9 @@ describe('authentication dialogs', () => {
     fireEvent.submit(dialog.getByRole('form'));
     expect(authService.signIn).toHaveBeenCalledOnce();
     await act(async () => rejectLogin({ code: 'invalid_credentials' }));
-    expect(await dialog.findByRole('alert')).toHaveTextContent('username, email, or password is incorrect');
+    expect(await dialog.findByRole('alert')).toHaveTextContent(
+      'username, email, or password is incorrect',
+    );
     expect(dialog.getByRole('button', { name: 'Log in' })).toBeEnabled();
   });
 
@@ -253,12 +388,24 @@ describe('authentication dialogs', () => {
     await user.click(dialog.getByRole('button', { name: 'Register' }));
     await user.type(dialog.getByLabelText('Name'), 'John');
     await user.type(dialog.getByLabelText('Username'), 'john_doe');
-    await user.type(dialog.getByLabelText(/^(Username or email|Email)$/), john.email);
+    await user.type(
+      dialog.getByLabelText(/^(Username or email|Email)$/),
+      john.email,
+    );
     await user.type(dialog.getByLabelText('Password'), 'test-password');
     await user.click(dialog.getByRole('button', { name: 'Create account' }));
-    expect(authService.signUp).toHaveBeenCalledWith('John', 'john_doe', john.email, 'test-password');
-    expect(await dialog.findByRole('heading', { name: 'Registration successful' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Welcome to our site' })).toBeInTheDocument();
+    expect(authService.signUp).toHaveBeenCalledWith(
+      'John',
+      'john_doe',
+      john.email,
+      'test-password',
+    );
+    expect(
+      await dialog.findByRole('heading', { name: 'Registration successful' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Welcome to our site' }),
+    ).toBeInTheDocument();
     expect(dialog.getByRole('status')).toHaveTextContent('verify your account');
   });
 
@@ -266,14 +413,22 @@ describe('authentication dialogs', () => {
     const { user, store } = setup(true);
     const dialog = within(screen.getByRole('dialog'));
     await user.type(dialog.getByLabelText('New password'), 'new-password');
-    await user.type(dialog.getByLabelText('Confirm new password'), 'different-password');
+    await user.type(
+      dialog.getByLabelText('Confirm new password'),
+      'different-password',
+    );
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
     expect(dialog.getByRole('alert')).toHaveTextContent('do not match');
     expect(authService.updatePassword).not.toHaveBeenCalled();
     await user.clear(dialog.getByLabelText('Confirm new password'));
-    await user.type(dialog.getByLabelText('Confirm new password'), 'new-password');
+    await user.type(
+      dialog.getByLabelText('Confirm new password'),
+      'new-password',
+    );
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
-    expect(await dialog.findByRole('heading', { name: 'Password updated' })).toBeInTheDocument();
+    expect(
+      await dialog.findByRole('heading', { name: 'Password updated' }),
+    ).toBeInTheDocument();
     expect(authService.updatePassword).toHaveBeenCalledWith('new-password');
     expect(authService.signOut).toHaveBeenCalledOnce();
     expect(store.getState().auth.user).toBeNull();
@@ -282,15 +437,26 @@ describe('authentication dialogs', () => {
   });
 
   it('retries a failed reset sign-out without changing the password twice', async () => {
-    vi.mocked(authService.signOut).mockRejectedValueOnce(new Error('network')).mockResolvedValueOnce(undefined);
+    vi.mocked(authService.signOut)
+      .mockRejectedValueOnce(new Error('network'))
+      .mockResolvedValueOnce(undefined);
     const { user } = setup(true);
     const dialog = within(screen.getByRole('dialog'));
     await user.type(dialog.getByLabelText('New password'), 'new-password');
-    await user.type(dialog.getByLabelText('Confirm new password'), 'new-password');
+    await user.type(
+      dialog.getByLabelText('Confirm new password'),
+      'new-password',
+    );
     await user.click(dialog.getByRole('button', { name: 'Save new password' }));
-    expect(await dialog.findByRole('alert')).toHaveTextContent('Check your connection');
-    await user.click(dialog.getByRole('button', { name: 'Finish signing out' }));
-    await waitFor(() => expect(dialog.getByRole('heading')).toHaveTextContent('Password updated'));
+    expect(await dialog.findByRole('alert')).toHaveTextContent(
+      'Check your connection',
+    );
+    await user.click(
+      dialog.getByRole('button', { name: 'Finish signing out' }),
+    );
+    await waitFor(() =>
+      expect(dialog.getByRole('heading')).toHaveTextContent('Password updated'),
+    );
     expect(authService.updatePassword).toHaveBeenCalledOnce();
     expect(authService.signOut).toHaveBeenCalledTimes(2);
   });
@@ -303,5 +469,3 @@ describe('authentication dialogs', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });
-
-
