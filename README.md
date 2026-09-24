@@ -21,7 +21,15 @@ For example, `public/images/hero.webp` is referenced as `/images/hero.webp` in J
 
 The `images/` and `favicons/` folders are ready to use; the root files shown above are examples to add when needed.
 
-## Run locally
+## SVG icons
+
+Place SVG source files in `src/assets/icons/` using lowercase kebab-case names and a `viewBox`. Run `npm run icons` to regenerate `public/icons.svg`; this also runs automatically before `npm run dev` and `npm run build`. After adding or editing icons while the dev server is running, rerun `npm run icons` and refresh the page.
+
+Use `<Icon name="close-eye" />` (import from `src/components/Icon`) or `<Icon name="close" label="Close" width={16} height={16} />`. Icon names come from filenames. Unlabelled icons are decorative; label meaningful standalone icons. The home page includes a closed-eye demo.
+
+Generated symbols omit root width/height and fixed fill colors, retain their viewBox, and inherit color through `currentColor` on the Icon component. Child `fill="none"` is retained for hollow shapes, and shape dimensions are retained to avoid breaking rectangles and masks. Stroke colors become `currentColor`. Sources remain untouched. Embedded CSS is rejected; use presentation attributes. The generated sprite is ignored by Git and rebuilt from the source files.
+
+## Local setup
 
 Use Node.js 22.12+ (tested with Node 24) and npm:
 

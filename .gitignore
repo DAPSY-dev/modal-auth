@@ -1,5 +1,6 @@
 node_modules/
 dist/
+public/icons.svg
 .env
 .env.*
 !.env.example
