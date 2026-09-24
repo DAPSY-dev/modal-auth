@@ -1,6 +1,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 
-export function Modal({ children, onClose, busy, closeLabel = 'Close' }: { children: ReactNode; onClose: () => void; busy: boolean; closeLabel?: string }) {
+export function Modal({ children, onClose, busy }: { children: ReactNode; onClose: () => void; busy: boolean }) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const trigger = document.activeElement;
@@ -17,7 +17,7 @@ export function Modal({ children, onClose, busy, closeLabel = 'Close' }: { child
       if (!busy) onClose();
     }}>
       {children}
-      <button type="button" disabled={busy} onClick={onClose}>{closeLabel}</button>
+      <button type="button" disabled={busy} onClick={onClose}>Close</button>
     </dialog>
   );
 }
