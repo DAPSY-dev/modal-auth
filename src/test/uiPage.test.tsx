@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
 import { createAppStore } from '../app/store';
 import { signedIn } from '../features/auth/authSlice';
-import { UiPage } from '../pages/UiPage';
+import { UiModalsPage } from '../pages/UiModalsPage';
 import { authService } from '../services/authService';
 import {
   getRememberedUser,
@@ -35,8 +35,8 @@ function setup() {
   store.dispatch(signedIn(realUser));
   render(
     <Provider store={store}>
-      <MemoryRouter initialEntries={['/ui']}>
-        <UiPage />
+      <MemoryRouter initialEntries={['/ui/modals']}>
+        <UiModalsPage />
       </MemoryRouter>
     </Provider>,
   );
