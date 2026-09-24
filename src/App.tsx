@@ -5,6 +5,7 @@ import { showModal, signedOut } from './features/auth/authSlice';
 import { AuthModal } from './features/auth/components/AuthModal';
 import { useAuthRequest } from './features/auth/useAuthRequest';
 import { Icon } from './components/Icon';
+import { Wrapper } from './components/Wrapper';
 
 export function App() {
   const { user, status, startupError, busy } = useAppSelector(
@@ -13,7 +14,7 @@ export function App() {
   const dispatch = useAppDispatch();
   const { run, loading, error } = useAuthRequest();
   return (
-    <>
+    <Wrapper>
       <header>
         <a href="/" aria-label="Authentication demo home">
           Authentication demo
@@ -59,6 +60,6 @@ export function App() {
         {startupError && <p role="alert">{startupError}</p>}
       </main>
       <AuthModal />
-    </>
+    </Wrapper>
   );
 }

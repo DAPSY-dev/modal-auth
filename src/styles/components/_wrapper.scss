@@ -7,12 +7,4 @@
     100% - 2 * var(--ma-wrapper-spacing),
     var(--ma-wrapper-size)
   );
-
-  &--spacing-md {
-    --ma-wrapper-spacing: var(--ma-base-spacing-md);
-  }
-
-  &--size-md {
-    --ma-wrapper-size: var(--ma-base-container-md);
-  }
 }
