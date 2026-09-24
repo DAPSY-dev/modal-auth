@@ -4,6 +4,23 @@ A small React + TypeScript application demonstrating Supabase username-or-email/
 
 **Styling is intentionally omitted.** There are no CSS files, inline styles, or styling classes. The UI will later be styled against the provided Figma design. Native browser controls, dialog backdrop, and fieldset borders are browser defaults.
 
+## Static images and resources
+
+Put static files in `public/`. Vite serves them from the site root and copies them into the production build unchanged.
+
+```text
+public/
+  images/       # Hero images, backgrounds, and other images
+  favicons/     # Favicon sizes and app icons
+  robots.txt    # Add here when needed
+  favicon.ico   # Optional default browser favicon
+  site.webmanifest  # Optional web app manifest
+```
+
+For example, `public/images/hero.webp` is referenced as `/images/hero.webp` in JSX (`<img src="/images/hero.webp" alt="..." />`). Do not include `public` in the URL. Add favicon and manifest links in `index.html` after adding their files, such as `<link rel="icon" href="/favicons/favicon.svg" type="image/svg+xml" />`.
+
+The `images/` and `favicons/` folders are ready to use; the root files shown above are examples to add when needed.
+
 ## Run locally
 
 Use Node.js 22.12+ (tested with Node 24) and npm:
