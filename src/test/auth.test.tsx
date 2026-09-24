@@ -10,6 +10,7 @@ import {
 import userEvent from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { App } from '../App';
+import { MemoryRouter } from 'react-router';
 import { createAppStore } from '../app/store';
 import { sessionReceived } from '../features/auth/authSlice';
 import { authService, UsernameUnavailableError } from '../services/authService';
@@ -39,7 +40,9 @@ function setup(recovery = false) {
   store.dispatch(sessionReceived({ user: null, recovery, invalidLink: false }));
   render(
     <Provider store={store}>
-      <App />
+      <MemoryRouter>
+        <App />
+      </MemoryRouter>
     </Provider>,
   );
   return { store, user: userEvent.setup() };

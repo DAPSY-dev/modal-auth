@@ -1,4 +1,5 @@
 import { Button } from './Button';
+import { Link } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../app/store';
 import { authService } from '../services/authService';
 import { showModal, signedOut } from '../features/auth/authSlice';
@@ -10,10 +11,10 @@ export function Header() {
   const { run, loading, error } = useAuthRequest();
   return (
     <header>
-      <a href="/" aria-label="Authentication demo home">
+      <Link to="/" aria-label="Authentication demo home">
         Authentication demo
-      </a>
-      <a href="/ui">UI showcase</a>
+      </Link>
+      <Link to="/ui">UI showcase</Link>
       <nav aria-label="Account">
         {user && (
           <Button
