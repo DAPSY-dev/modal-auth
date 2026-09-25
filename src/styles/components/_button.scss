@@ -1,0 +1,42 @@
+@use '../abstracts/functions' as *;
+@use '../abstracts/mixins' as *;
+
+.button {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: currentColor;
+
+  &:not(:disabled, &--loading) {
+    cursor: pointer;
+  }
+
+  &--primary {
+  }
+
+  &--secondary {
+  }
+
+  &--tertiary {
+  }
+
+  &--xs {
+  }
+
+  &--s {
+  }
+
+  &--m {
+  }
+
+  &--l {
+  }
+
+  &--xl {
+  }
+
+  &--loading {
+  }
+}

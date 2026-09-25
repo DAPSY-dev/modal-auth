@@ -14,7 +14,7 @@
 
   // Gradients
   --ma-base-gradient-50: linear-gradient(
-    rgb(var(--ma-base-color-black) / 0) 0%,
+    transparent 0%,
     rgb(var(--ma-base-color-secondary-700)) 83%,
     rgb(var(--ma-base-color-secondary-500)) 92%,
     rgb(var(--ma-base-color-secondary-700)) 100%
@@ -22,7 +22,7 @@
   --ma-base-gradient-100: radial-gradient(
     76.74% 80.99% at -9.43% -8.86%,
     rgb(var(--ma-base-color-primary-600)) 0%,
-    rgb(var(--ma-base-color-black) / 0) 100%
+    transparent 100%
   );
 
   // Shadows
