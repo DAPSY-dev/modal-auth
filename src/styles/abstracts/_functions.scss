@@ -1,6 +1,6 @@
-@use "sass:map";
-@use "sass:math";
-@use "variables" as *;
+@use 'sass:map';
+@use 'sass:math';
+@use 'variables' as *;
 
 @function strip-unit($value) {
   @return math.div($value, $value * 0 + 1);

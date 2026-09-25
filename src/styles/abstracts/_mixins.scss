@@ -1,6 +1,6 @@
-@use "sass:list";
-@use "sass:map";
-@use "variables" as *;
+@use 'sass:list';
+@use 'sass:map';
+@use 'variables' as *;
 
 @mixin hover {
   @media (hover: hover) and (pointer: fine) {
