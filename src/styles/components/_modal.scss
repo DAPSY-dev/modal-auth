@@ -1,0 +1,46 @@
+@use '../abstracts/functions' as *;
+@use '../abstracts/mixins' as *;
+
+.modal {
+  border: none;
+  border-radius: rem(9px);
+  padding: rem(5px);
+  width: calc(100% - 2 * rem(20px));
+  max-width: rem(510px);
+  max-height: calc(100% - 2 * rem(20px));
+  background: var(--ma-base-gradient-50);
+  box-shadow: var(--ma-base-shadow-50);
+
+  @include screen-from(md) {
+    border-radius: rem(11px);
+  }
+
+  &__inner {
+    position: relative;
+    border: rem(1px) solid rgb(var(--ma-base-color-primary-300));
+    border-radius: rem(4px);
+    padding: rem(48px) rem(16px) rem(28px);
+    background-color: rgb(var(--ma-base-color-primary-950));
+    background-image:
+      url('/images/modal/modal-bg.png'), var(--ma-base-gradient-100);
+    background-image:
+      image-set(
+        url('/images/modal/modal-bg.webp') type('image/webp') 1x,
+        url('/images/modal/modal-bg@2x.webp') type('image/webp') 2x,
+        url('/images/modal/modal-bg.png') type('image/png') 1x,
+        url('/images/modal/modal-bg@2x.png') type('image/png') 2x
+      ),
+      var(--ma-base-gradient-100);
+    background-size: 100% 100%;
+
+    @include screen-from(md) {
+      padding: rem(64px) rem(52px) rem(48px);
+    }
+  }
+
+  &__close {
+    position: absolute;
+    inset-block-start: rem(12px);
+    inset-inline-end: rem(12px);
+  }
+}

@@ -1,5 +1,6 @@
 import { Button } from './Button';
 import { useEffect, useRef, type ReactNode } from 'react';
+import { Icon } from './Icon';
 
 export function Modal({
   children,
@@ -30,11 +31,20 @@ export function Modal({
         event.preventDefault();
         if (!busy) onClose();
       }}
+      className="modal"
     >
-      {children}
-      <Button type="button" disabled={busy} onClick={onClose}>
-        Close
-      </Button>
+      <div className="modal__inner">
+        <Button
+          type="button"
+          disabled={busy}
+          onClick={onClose}
+          className="modal__close"
+        >
+          <Icon name="close" />
+          <span className="visually-hidden">Close</span>
+        </Button>
+        {children}
+      </div>
     </dialog>
   );
 }

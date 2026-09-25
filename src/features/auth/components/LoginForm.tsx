@@ -29,8 +29,14 @@ export function LoginForm({
   return (
     <>
       <h2 id="auth-title" tabIndex={-1}>
-        {rememberedUser ? `Welcome back, ${rememberedUser.name}` : 'Log in'}
+        {rememberedUser ? `Welcome back, ${rememberedUser.name}!` : 'Log in'}
       </h2>
+      <p>
+        Don’t have an account?{' '}
+        <Button type="button" onClick={() => dispatch(showModal('register'))}>
+          Register Now
+        </Button>
+      </p>
       <form
         noValidate
         aria-label="Log in"
@@ -51,15 +57,14 @@ export function LoginForm({
         }}
       >
         <fieldset disabled={loading}>
-          <legend>Login details</legend>
-          {rememberedUser ? (
-            <p>{rememberedUser.email}</p>
-          ) : (
+          <legend className="visually-hidden">Login details</legend>
+          {!rememberedUser && (
             <Input
               {...field('identifier')}
-              label="Username or email"
+              label="E-mail"
               name="identifier"
               type="text"
+              placeholder="Enter e-mail"
               autoComplete="username"
               autoCapitalize="none"
               spellCheck={false}
@@ -73,26 +78,27 @@ export function LoginForm({
             label="Password"
             name="password"
             type="password"
+            placeholder="Enter password"
             autoComplete="current-password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
           <Button type="submit">{loading ? 'Logging in…' : 'Log in'}</Button>
-          {onSwitchAccount && (
-            <Button type="button" onClick={onSwitchAccount}>
-              Not you?
-            </Button>
-          )}
           <Button
             type="button"
             onClick={() => dispatch(showModal('forgotPassword'))}
           >
             Forgot password?
           </Button>
-          <Button type="button" onClick={() => dispatch(showModal('register'))}>
-            Register
-          </Button>
+          {onSwitchAccount && rememberedUser && (
+            <>
+              <p>Not {rememberedUser.name}?</p>
+              <Button type="button" onClick={onSwitchAccount}>
+                Log in with another account
+              </Button>
+            </>
+          )}
         </fieldset>
         {error && <p role="alert">{error}</p>}
       </form>

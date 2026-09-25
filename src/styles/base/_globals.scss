@@ -1,11 +1,15 @@
 @use '../abstracts/functions' as *;
 
+:root {
+  color-scheme: dark;
+}
+
 html {
   font-family: var(--ma-base-font-family-primary);
 }
 
 a {
-  color: rgb(var(--ma-base-color-primary));
+  color: currentColor;
 }
 
 h1,
