@@ -5,20 +5,12 @@
 }
 
 html {
-  font-family: var(--ma-base-font-family-primary);
+  font-family: var(--ma-base-font-family-1);
+  font-optical-sizing: auto;
 }
 
 a {
   color: currentColor;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--ma-base-font-family-secondary);
 }
 
 table {
