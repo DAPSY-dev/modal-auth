@@ -17,6 +17,6 @@ table {
   & th,
   & td {
     border: rem(1px) solid rgb(var(--ma-base-color-black));
-    padding: var(--ma-base-spacing-md);
+    padding: rem(8px);
   }
 }

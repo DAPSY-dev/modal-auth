@@ -12,11 +12,6 @@
   --ma-base-color-secondary-500: 214 151 92;
   --ma-base-color-secondary-700: 185 111 46;
 
-  --ma-base-color-info: 25 150 250;
-  --ma-base-color-error: 250 25 25;
-  --ma-base-color-warning: 250 150 25;
-  --ma-base-color-success: 25 250 100;
-
   // Gradients
   --ma-base-gradient-50: linear-gradient(
     rgb(var(--ma-base-color-black) / 0) 0%,
@@ -38,47 +33,6 @@
   --ma-base-font-family-1: 'Rubik', sans-serif;
   --ma-base-font-family-2: 'Barlow Condensed', sans-serif;
 
-  --ma-base-font-size-xs: #{rem(12px)};
-  --ma-base-font-size-sm: #{rem(14px)};
-  --ma-base-font-size-md: #{rem(16px)};
-  --ma-base-font-size-lg: #{rem(18px)};
-  --ma-base-font-size-xl: #{rem(20px)};
-  --ma-base-font-size-2xl: #{rem(24px)};
-  --ma-base-font-size-3xl: #{rem(28px)};
-  --ma-base-font-size-4xl: #{rem(32px)};
-  --ma-base-font-size-5xl: #{rem(36px)};
-  --ma-base-font-size-6xl: #{rem(40px)};
-  --ma-base-font-size-7xl: #{rem(48px)};
-  --ma-base-font-size-8xl: #{rem(56px)};
-  --ma-base-font-size-9xl: #{rem(64px)};
-
-  --ma-base-letter-spacing-xs: -0.05em;
-  --ma-base-letter-spacing-sm: -0.025em;
-  --ma-base-letter-spacing-md: 0;
-  --ma-base-letter-spacing-lg: 0.025em;
-  --ma-base-letter-spacing-xl: 0.05em;
-
-  --ma-base-line-height-xs: 1;
-  --ma-base-line-height-sm: 1.125;
-  --ma-base-line-height-md: 1.25;
-  --ma-base-line-height-lg: 1.5;
-  --ma-base-line-height-xl: 1.75;
-
-  // Spacing
-  --ma-base-spacing-xs: #{rem(2px)};
-  --ma-base-spacing-sm: #{rem(4px)};
-  --ma-base-spacing-md: #{rem(8px)};
-  --ma-base-spacing-lg: #{rem(12px)};
-  --ma-base-spacing-xl: #{rem(16px)};
-  --ma-base-spacing-2xl: #{rem(24px)};
-  --ma-base-spacing-3xl: #{rem(28px)};
-  --ma-base-spacing-4xl: #{rem(32px)};
-  --ma-base-spacing-5xl: #{rem(40px)};
-  --ma-base-spacing-6xl: #{rem(48px)};
-  --ma-base-spacing-7xl: #{rem(56px)};
-  --ma-base-spacing-8xl: #{rem(64px)};
-  --ma-base-spacing-9xl: #{rem(72px)};
-
   // Containers
   --ma-base-container-sm: #{rem(640px)};
   --ma-base-container-md: #{rem(768px)};
@@ -87,19 +41,6 @@
   --ma-base-container-2xl: #{rem(1536px)};
 
   // Border Radius
-  --ma-base-radius-xs: #{rem(2px)};
-  --ma-base-radius-sm: #{rem(4px)};
-  --ma-base-radius-md: #{rem(8px)};
-  --ma-base-radius-lg: #{rem(12px)};
-  --ma-base-radius-xl: #{rem(16px)};
-  --ma-base-radius-2xl: #{rem(24px)};
-  --ma-base-radius-3xl: #{rem(32px)};
-  --ma-base-radius-4xl: #{rem(40px)};
-  --ma-base-radius-5xl: #{rem(48px)};
-  --ma-base-radius-6xl: #{rem(56px)};
-  --ma-base-radius-7xl: #{rem(64px)};
-  --ma-base-radius-8xl: #{rem(72px)};
-  --ma-base-radius-9xl: #{rem(80px)};
   --ma-base-radius-full: 9999px;
 
   // Z-Index

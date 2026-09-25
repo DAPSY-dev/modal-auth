@@ -1,5 +1,7 @@
+@use '../abstracts/functions' as *;
+
 .wrapper {
-  --ma-wrapper-spacing: var(--ma-base-spacing-xl);
+  --ma-wrapper-spacing: #{rem(16px)};
   --ma-wrapper-size: var(--ma-base-container-xl);
 
   margin-inline: auto;
