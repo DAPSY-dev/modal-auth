@@ -12,54 +12,77 @@ export function UiButtonsPage() {
         <h2>Variants</h2>
         <ul>
           <li>
-            <Button>Button</Button>
+            <p>
+              <Button variant="primary" size="m">
+                Button primary
+              </Button>
+            </p>
           </li>
           <li>
-            <Button variant="primary">Button</Button>
+            <p>
+              <Button variant="secondary" size="m">
+                Button secondary
+              </Button>
+            </p>
           </li>
           <li>
-            <Button variant="secondary">Button</Button>
+            <p>
+              <Button variant="tertiary" size="m">
+                Button tertiary
+              </Button>
+            </p>
           </li>
           <li>
-            <Button variant="tertiary">Button</Button>
+            <p>
+              <Button variant="primary" size="m" loading>
+                Button loading
+              </Button>
+            </p>
           </li>
           <li>
-            <Button variant="primary" loading>
-              Button
-            </Button>
-          </li>
-          <li>
-            <Button variant="primary" disabled>
-              Button
-            </Button>
+            <p>
+              <Button variant="primary" size="m" disabled>
+                Button disabled
+              </Button>
+            </p>
           </li>
         </ul>
         <h2>Sizes</h2>
         <ul>
           <li>
-            <Button variant="primary" size="xs">
-              Button
-            </Button>
+            <p>
+              <Button variant="primary" size="xs">
+                Button XS
+              </Button>
+            </p>
           </li>
           <li>
-            <Button variant="primary" size="s">
-              Button
-            </Button>
+            <p>
+              <Button variant="primary" size="s">
+                Button S
+              </Button>
+            </p>
           </li>
           <li>
-            <Button variant="primary" size="m">
-              Button
-            </Button>
+            <p>
+              <Button variant="primary" size="m">
+                Button M
+              </Button>
+            </p>
           </li>
           <li>
-            <Button variant="primary" size="l">
-              Button
-            </Button>
+            <p>
+              <Button variant="primary" size="l">
+                Button L
+              </Button>
+            </p>
           </li>
           <li>
-            <Button variant="primary" size="xl">
-              Button
-            </Button>
+            <p>
+              <Button variant="primary" size="xl">
+                Button XL
+              </Button>
+            </p>
           </li>
         </ul>
       </Layout>

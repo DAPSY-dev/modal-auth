@@ -23,15 +23,24 @@ export function Button({
       className={[
         'button',
         variant && `button--${variant}`,
+        size && `button--${size}`,
         loading && 'button--loading',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
     >
+      <span
+        aria-hidden="true"
+        className="button__decoration button__decoration--one"
+      ></span>
+      <span
+        aria-hidden="true"
+        className="button__decoration button__decoration--two"
+      ></span>
       {loading ? (
         <>
-          <Icon name="preloader" />
+          <Icon name="preloader" className="button__icon" />
           <span className="visually-hidden">Loading…</span>
         </>
       ) : (
