@@ -1,7 +1,7 @@
 import { AuthModal } from '../features/auth/components/AuthModal';
 import { Layout } from '../components/Layout';
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link } from '../components/Link';
 import { Button } from '../components/Button';
 import { useAppDispatch, useAppSelector } from '../app/store';
 import { showModal } from '../features/auth/authSlice';

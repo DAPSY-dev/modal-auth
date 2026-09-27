@@ -9,6 +9,7 @@
   background: transparent;
   color: currentColor;
   text-align: center;
+  text-decoration: none;
 
   &:not(:disabled, &--loading) {
     cursor: pointer;

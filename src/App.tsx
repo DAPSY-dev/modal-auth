@@ -1,6 +1,6 @@
 import { AuthModal } from './features/auth/components/AuthModal';
 import { useAppDispatch, useAppSelector } from './app/store';
-import { Link } from 'react-router';
+import { Link } from './components/Link';
 import { Button } from './components/Button';
 import { showModal } from './features/auth/authSlice';
 import { Icon } from './components/Icon';

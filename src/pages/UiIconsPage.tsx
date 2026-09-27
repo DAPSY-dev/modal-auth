@@ -1,6 +1,6 @@
 import { AuthModal } from '../features/auth/components/AuthModal';
 import { Layout } from '../components/Layout';
-import { Link } from 'react-router';
+import { Link } from '../components/Link';
 import { Icon } from '../components/Icon';
 
 export function UiIconsPage() {

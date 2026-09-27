@@ -1,5 +1,5 @@
 import { Button } from './Button';
-import { Link } from 'react-router';
+import { Link } from './Link';
 import { useAppDispatch, useAppSelector } from '../app/store';
 import { authService } from '../services/authService';
 import { showModal, signedOut } from '../features/auth/authSlice';

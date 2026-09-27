@@ -1,6 +1,6 @@
 import { AuthModal } from '../features/auth/components/AuthModal';
 import { Layout } from '../components/Layout';
-import { Link } from 'react-router';
+import { Link } from '../components/Link';
 
 export function UiPage() {
   return (
@@ -13,6 +13,9 @@ export function UiPage() {
           <ul>
             <li>
               <Link to="/ui/modals">Modals</Link>
+            </li>
+            <li>
+              <Link to="/ui/links">Links</Link>
             </li>
             <li>
               <Link to="/ui/buttons">Buttons</Link>

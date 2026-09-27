@@ -1,0 +1,48 @@
+@use '../abstracts/mixins' as *;
+
+.link {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  color: currentColor;
+  text-align: center;
+  text-decoration: none;
+
+  &:not(:disabled, &--loading) {
+    cursor: pointer;
+  }
+
+  &--primary,
+  &--secondary,
+  &--alert {
+    font-weight: 500;
+    line-height: 1.4;
+    color: rgb(var(--ma-base-color-secondary-300));
+    text-transform: uppercase;
+    transition: color var(--ma-base-duration-fast);
+
+    @include reduce-motion {
+      transition: none;
+    }
+
+    @include hover {
+      &:hover {
+        color: rgb(var(--ma-base-color-white));
+      }
+    }
+
+    &:active {
+      color: rgb(var(--ma-base-color-white) / 0.7);
+    }
+  }
+
+  &--secondary {
+    color: rgb(var(--ma-base-color-text-secondary));
+  }
+
+  &--alert {
+    color: rgb(var(--ma-base-color-red-500));
+  }
+}
