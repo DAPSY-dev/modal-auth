@@ -7,7 +7,11 @@ export function UiIconsPage() {
   return (
     <>
       <Layout>
-        <Link to="/ui">Back to UI showcase</Link>
+        <p>
+          <Link to="/ui" variant="secondary">
+            Back to UI showcase
+          </Link>
+        </p>
         <h1>Icons</h1>
         <ul>
           <li>

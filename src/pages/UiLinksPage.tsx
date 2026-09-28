@@ -6,7 +6,11 @@ export function UiLinksPage() {
   return (
     <>
       <Layout>
-        <Link to="/ui">Back to UI showcase</Link>
+        <p>
+          <Link to="/ui" variant="secondary">
+            Back to UI showcase
+          </Link>
+        </p>
         <h1>Inputs</h1>
         <h2>Types</h2>
         <ul>

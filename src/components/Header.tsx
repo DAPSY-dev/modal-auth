@@ -1,5 +1,6 @@
 import { Button } from './Button';
 import { Link } from './Link';
+import { FormError } from './Form';
 import { useAppDispatch, useAppSelector } from '../app/store';
 import { authService } from '../services/authService';
 import { showModal, signedOut } from '../features/auth/authSlice';
@@ -16,6 +17,8 @@ export function Header() {
       </Link>
       <nav aria-label="Account">
         <Button
+          variant="tertiary"
+          size="xs"
           disabled={status === 'initializing' || busy}
           onClick={() => {
             if (!user) {
@@ -31,7 +34,7 @@ export function Header() {
           {loading ? 'Logging out…' : user ? 'Log out' : 'Log in'}
         </Button>
       </nav>
-      {error && <p role="alert">{error}</p>}
+      {error && <FormError>{error}</FormError>}
     </header>
   );
 }

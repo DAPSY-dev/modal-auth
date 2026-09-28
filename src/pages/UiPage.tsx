@@ -6,25 +6,39 @@ export function UiPage() {
   return (
     <>
       <Layout>
-        <Link to="/">Back to home</Link>
+        <p>
+          <Link to="/" variant="secondary">
+            Back to home
+          </Link>
+        </p>
         <h1>UI showcase</h1>
         <p>Choose a component to explore its examples.</p>
         <nav aria-label="Component showcases">
           <ul>
             <li>
-              <Link to="/ui/modals">Modals</Link>
+              <Link to="/ui/modals" variant="primary">
+                Modals
+              </Link>
             </li>
             <li>
-              <Link to="/ui/links">Links</Link>
+              <Link to="/ui/links" variant="primary">
+                Links
+              </Link>
             </li>
             <li>
-              <Link to="/ui/buttons">Buttons</Link>
+              <Link to="/ui/buttons" variant="primary">
+                Buttons
+              </Link>
             </li>
             <li>
-              <Link to="/ui/inputs">Inputs</Link>
+              <Link to="/ui/inputs" variant="primary">
+                Inputs
+              </Link>
             </li>
             <li>
-              <Link to="/ui/icons">Icons</Link>
+              <Link to="/ui/icons" variant="primary">
+                Icons
+              </Link>
             </li>
           </ul>
         </nav>

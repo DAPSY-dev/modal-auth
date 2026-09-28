@@ -7,7 +7,11 @@ export function UiButtonsPage() {
   return (
     <>
       <Layout>
-        <Link to="/ui">Back to UI showcase</Link>
+        <p>
+          <Link to="/ui" variant="secondary">
+            Back to UI showcase
+          </Link>
+        </p>
         <h1>Buttons</h1>
         <h2>Variants</h2>
         <ul>

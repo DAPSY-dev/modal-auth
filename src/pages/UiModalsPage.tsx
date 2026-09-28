@@ -2,7 +2,6 @@ import { AuthModal } from '../features/auth/components/AuthModal';
 import { Layout } from '../components/Layout';
 import { useState } from 'react';
 import { Link } from '../components/Link';
-import { Button } from '../components/Button';
 import { useAppDispatch, useAppSelector } from '../app/store';
 import { showModal } from '../features/auth/authSlice';
 import { LoginForm } from '../features/auth/components/LoginForm';
@@ -58,7 +57,11 @@ export function UiModalsPage() {
   return (
     <>
       <Layout>
-        <Link to="/ui">Back to UI showcase</Link>
+        <p>
+          <Link to="/ui" variant="secondary">
+            Back to UI showcase
+          </Link>
+        </p>
         <h1>Modals</h1>
         <p>
           {user
@@ -76,14 +79,16 @@ export function UiModalsPage() {
             <ul>
               {modals.map(({ state, label }) => (
                 <li key={state}>
-                  <Button
+                  <Link
+                    as="button"
+                    variant="primary"
                     onClick={() => {
                       setDummy(null);
                       dispatch(showModal(state));
                     }}
                   >
                     {label}
-                  </Button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -92,12 +97,30 @@ export function UiModalsPage() {
         <section aria-label="Dummy modals">
           <h2>Dummy modals</h2>
           <p>These examples have no backend behavior.</p>
-          <Button onClick={() => setDummy('username')}>
-            Username recovery (dummy)
-          </Button>
-          <Button onClick={() => setDummy('frozen')}>
-            Account frozen (dummy)
-          </Button>
+          <ul>
+            <li>
+              <p>
+                <Link
+                  as="button"
+                  variant="primary"
+                  onClick={() => setDummy('username')}
+                >
+                  Username recovery (dummy)
+                </Link>
+              </p>
+            </li>
+            <li>
+              <p>
+                <Link
+                  as="button"
+                  variant="primary"
+                  onClick={() => setDummy('frozen')}
+                >
+                  Account frozen (dummy)
+                </Link>
+              </p>
+            </li>
+          </ul>
         </section>
       </Layout>
       <AuthModal
