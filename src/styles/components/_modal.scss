@@ -15,6 +15,10 @@
     border-radius: rem(11px);
   }
 
+  &::backdrop {
+    background: rgb(var(--ma-base-color-black) / 0.2);
+  }
+
   &__inner {
     position: relative;
     border: rem(1px) solid rgb(var(--ma-base-color-primary-300));
@@ -40,7 +44,33 @@
 
   &__close {
     position: absolute;
-    inset-block-start: rem(12px);
-    inset-inline-end: rem(12px);
+    inset-block-start: rem(18px);
+    inset-inline-end: rem(18px);
+    opacity: 0.4;
+    transition: opacity var(--ma-base-duration-fast);
+
+    @include reduce-motion {
+      transition: none;
+    }
+
+    @include hover {
+      &:hover {
+        opacity: 0.7;
+      }
+    }
+
+    &:active {
+      opacity: 1;
+    }
+  }
+
+  &__close-icon {
+    inline-size: rem(16px);
+    block-size: rem(16px);
+
+    @include screen-from(md) {
+      inline-size: rem(24px);
+      block-size: rem(24px);
+    }
   }
 }

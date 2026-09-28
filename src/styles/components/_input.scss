@@ -1,6 +1,11 @@
 @use '../abstracts/functions' as *;
 @use '../abstracts/mixins' as *;
 
+input:autofill,
+input:-webkit-autofill {
+  transition: background-color 9999s ease-in-out 0s;
+}
+
 .input {
   display: grid;
   gap: rem(8px);
@@ -104,9 +109,14 @@
     }
   }
 
+  &--password &__icon-wrapper:disabled {
+    background: transparent;
+    color: rgb(var(--ma-base-color-text-secondary));
+  }
+
   &__icon-wrapper-icon {
-    inline-size: 1rem;
-    block-size: 1rem;
+    inline-size: rem(16px);
+    block-size: rem(16px);
   }
 
   &__description {

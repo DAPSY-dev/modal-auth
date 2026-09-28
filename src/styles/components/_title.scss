@@ -1,0 +1,13 @@
+@use '../abstracts/functions' as *;
+@use '../abstracts/mixins' as *;
+
+.title {
+  margin: 0;
+  font-size: rem(22px);
+  font-weight: 800;
+  line-height: 1;
+
+  @include screen-from(md) {
+    font-size: rem(26px);
+  }
+}

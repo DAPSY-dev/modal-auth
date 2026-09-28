@@ -32,21 +32,21 @@ export function UiLinksPage() {
         <ul>
           <li>
             <p>
-              <Link as="button" variant="primary">
+              <Link as="button" variant="primary" className="text-uppercase">
                 Link primary
               </Link>
             </p>
           </li>
           <li>
             <p>
-              <Link as="button" variant="secondary">
+              <Link as="button" variant="secondary" className="text-uppercase">
                 Link secondary
               </Link>
             </p>
           </li>
           <li>
             <p>
-              <Link as="button" variant="alert">
+              <Link as="button" variant="alert" className="text-uppercase">
                 Link alert
               </Link>
             </p>

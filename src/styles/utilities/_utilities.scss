@@ -1,3 +1,5 @@
+@use '../abstracts/functions' as *;
+
 .clearfix::after {
   content: '';
   display: table;
@@ -19,4 +21,32 @@
 
 .overflow-auto {
   overflow: auto;
+}
+
+.no-margin {
+  margin: 0;
+}
+
+.full-inline-size {
+  inline-size: 100%;
+}
+
+.text-14 {
+  font-size: rem(14px);
+}
+
+.lh-130 {
+  line-height: 1.3;
+}
+
+.text-secondary {
+  color: rgb(var(--ma-base-color-text-secondary));
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
 }

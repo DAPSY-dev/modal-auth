@@ -40,7 +40,7 @@ export function Modal({
           onClick={onClose}
           className="modal__close"
         >
-          <Icon name="close" />
+          <Icon name="close" className="modal__close-icon" />
           <span className="visually-hidden">Close</span>
         </Button>
         {children}

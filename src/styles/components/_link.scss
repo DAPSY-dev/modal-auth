@@ -20,7 +20,6 @@
     font-weight: 500;
     line-height: 1.4;
     color: rgb(var(--ma-base-color-secondary-300));
-    text-transform: uppercase;
     transition: color var(--ma-base-duration-fast);
 
     @include reduce-motion {

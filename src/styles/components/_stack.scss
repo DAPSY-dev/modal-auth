@@ -1,0 +1,17 @@
+@use '../abstracts/functions' as *;
+
+.stack {
+  display: grid;
+
+  &--s {
+    gap: rem(16px);
+  }
+
+  &--m {
+    gap: rem(20px);
+  }
+
+  &--l {
+    gap: rem(24px);
+  }
+}
