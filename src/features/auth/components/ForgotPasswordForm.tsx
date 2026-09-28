@@ -1,6 +1,10 @@
 import { Button } from '../../../components/Button';
 import { useState } from 'react';
 import { Input } from '../../../components/Input';
+import { Stack } from '../../../components/Stack';
+import { Title } from '../../../components/Title';
+import { Form, FormError, FormFieldset } from '../../../components/Form';
+import { Link } from '../../../components/Link';
 import { useAppDispatch } from '../../../app/store';
 import { authService } from '../../../services/authService';
 import { showModal } from '../authSlice';
@@ -16,11 +20,14 @@ export function ForgotPasswordForm() {
     email: () => validateEmail(email),
   });
   return (
-    <>
-      <h2 id="auth-title" tabIndex={-1}>
-        Forgot password?
-      </h2>
-      <form
+    <Stack size="l">
+      <Title id="auth-title" tabIndex={-1} className="text-center">
+        Password recovery
+      </Title>
+      <p className="no-margin full-inline-size text-14 lh-130 text-secondary">
+        Don’t worry, it happens. We’ll send you reset instructions
+      </p>
+      <Form
         noValidate
         aria-label="Request password reset"
         aria-busy={loading}
@@ -35,27 +42,38 @@ export function ForgotPasswordForm() {
           });
         }}
       >
-        <fieldset disabled={loading}>
-          <legend>Recovery email</legend>
-          <Input
-            {...field('email')}
-            label="Email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Button type="submit">
-            {loading ? 'Sending instructions…' : 'Send reset instructions'}
-          </Button>
-          <Button type="button" onClick={() => dispatch(showModal('login'))}>
-            Back to login
-          </Button>
-        </fieldset>
-        {error && <p role="alert">{error}</p>}
-      </form>
-    </>
+        <FormFieldset disabled={loading}>
+          <legend className="visually-hidden">Recovery email</legend>
+          <Stack size="m">
+            <Input
+              {...field('email')}
+              label="Email"
+              name="email"
+              type="email"
+              placeholder="Enter e-mail"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Button
+              type="submit"
+              variant="primary"
+              size="m"
+              className="full-inline-size"
+            >
+              Reset password
+            </Button>
+            {error && <FormError className="text-center">{error}</FormError>}
+            <p className="no-margin full-inline-size text-14 lh-130 text-secondary text-center">
+              Forgot your username?{' '}
+              <Link as="button" variant="primary" className="text-uppercase">
+                RECOVER IT
+              </Link>
+            </p>
+          </Stack>
+        </FormFieldset>
+      </Form>
+    </Stack>
   );
 }

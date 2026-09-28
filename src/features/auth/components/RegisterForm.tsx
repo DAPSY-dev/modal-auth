@@ -1,6 +1,10 @@
 import { Button } from '../../../components/Button';
 import { useEffect, useRef, useState } from 'react';
 import { Input } from '../../../components/Input';
+import { Link } from '../../../components/Link';
+import { Title } from '../../../components/Title';
+import { Form, FormError, FormFieldset } from '../../../components/Form';
+import { Stack } from '../../../components/Stack';
 import { useAppDispatch } from '../../../app/store';
 import {
   authService,
@@ -34,11 +38,11 @@ export function RegisterForm() {
     password: () => validateNewPassword(password),
   });
   return (
-    <>
-      <h2 id="auth-title" tabIndex={-1}>
+    <Stack size="l">
+      <Title id="auth-title" tabIndex={-1} className="text-center">
         Create an account
-      </h2>
-      <form
+      </Title>
+      <Form
         noValidate
         aria-label="Register"
         aria-busy={loading}
@@ -65,69 +69,84 @@ export function RegisterForm() {
           });
         }}
       >
-        <fieldset disabled={loading}>
-          <legend>Account details</legend>
-          <Input
-            {...field('name')}
-            label="Name"
-            name="name"
-            autoComplete="name"
-            required
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <Input
-            {...field('username')}
-            ref={usernameInput}
-            error={usernameError ?? field('username').error}
-            label="Username"
-            name="username"
-            autoComplete="username"
-            autoCapitalize="none"
-            spellCheck={false}
-            required
-            aria-describedby="username-requirements"
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              setUsernameError(undefined);
-            }}
-          />
-          <p id="username-requirements">
-            Use 3–30 letters, numbers, or underscores. Usernames are not
-            case-sensitive.
-          </p>
-          <Input
-            {...field('email')}
-            label="Email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <Input
-            {...field('password')}
-            label="Password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            aria-describedby="password-requirements"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <p id="password-requirements">Use at least 8 characters.</p>
-          <Button type="submit">
-            {loading ? 'Creating account…' : 'Create account'}
-          </Button>
-          <Button type="button" onClick={() => dispatch(showModal('login'))}>
-            Back to login
-          </Button>
-        </fieldset>
-        {error && <p role="alert">{error}</p>}
-      </form>
-    </>
+        <FormFieldset disabled={loading}>
+          <legend className="visually-hidden">Account details</legend>
+          <Stack size="m">
+            <Stack size="s">
+              <Input
+                {...field('name')}
+                label="Name"
+                name="name"
+                placeholder="Enter name"
+                autoComplete="name"
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <Input
+                {...field('username')}
+                ref={usernameInput}
+                error={usernameError ?? field('username').error}
+                label="Username"
+                name="username"
+                placeholder="Enter username"
+                autoComplete="username"
+                autoCapitalize="none"
+                spellCheck={false}
+                required
+                aria-describedby="username-requirements"
+                description="Use 3–30 letters, numbers, or underscores. Usernames are not case-sensitive."
+                value={username}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setUsernameError(undefined);
+                }}
+              />
+              <Input
+                {...field('email')}
+                label="Email"
+                name="email"
+                type="email"
+                placeholder="Enter e-mail"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Input
+                {...field('password')}
+                label="Password"
+                name="password"
+                type="password"
+                placeholder="Enter password"
+                autoComplete="new-password"
+                required
+                aria-describedby="password-requirements"
+                description="Use at least 8 characters."
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </Stack>
+            <Button
+              type="submit"
+              variant="primary"
+              size="m"
+              className="full-inline-size"
+            >
+              Create account
+            </Button>
+            {error && <FormError className="text-center">{error}</FormError>}
+            <Link
+              as="button"
+              variant="secondary"
+              onClick={() => dispatch(showModal('login'))}
+              className="full-inline-size text-14 lh-130 text-center"
+            >
+              Back to login
+            </Link>
+          </Stack>
+        </FormFieldset>
+      </Form>
+    </Stack>
   );
 }

@@ -116,10 +116,16 @@ export function LoginForm({
               </Link>
               {onSwitchAccount && rememberedUser && (
                 <>
-                  <p>Not {rememberedUser.name}?</p>
-                  <Button type="button" onClick={onSwitchAccount}>
-                    Log in with another account
-                  </Button>
+                  <p className="no-margin full-inline-size text-14 lh-130 text-secondary text-center">
+                    Not {rememberedUser.name}? <br />
+                    <Link
+                      as="button"
+                      variant="secondary"
+                      onClick={onSwitchAccount}
+                    >
+                      Log in with another account
+                    </Link>
+                  </p>
                 </>
               )}
             </Stack>

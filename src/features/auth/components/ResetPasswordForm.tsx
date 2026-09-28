@@ -1,6 +1,9 @@
 import { Button } from '../../../components/Button';
 import { useState } from 'react';
 import { Input } from '../../../components/Input';
+import { Title } from '../../../components/Title';
+import { Form, FormError, FormFieldset } from '../../../components/Form';
+import { Stack } from '../../../components/Stack';
 import { useAppDispatch } from '../../../app/store';
 import { authService } from '../../../services/authService';
 import { showModal, signedOut } from '../authSlice';
@@ -19,11 +22,11 @@ export function ResetPasswordForm() {
     confirmation: () => validateConfirmation(password, confirmation),
   });
   return (
-    <>
-      <h2 id="auth-title" tabIndex={-1}>
-        Set a new password
-      </h2>
-      <form
+    <Stack size="l">
+      <Title id="auth-title" tabIndex={-1} className="text-center">
+        New password
+      </Title>
+      <Form
         noValidate
         aria-label="Reset password"
         aria-busy={loading}
@@ -46,47 +49,56 @@ export function ResetPasswordForm() {
           });
         }}
       >
-        <fieldset disabled={loading}>
-          <legend>New password</legend>
-          {passwordUpdated ? (
-            <p role="status">
-              Your password was changed. Finish signing out to return to login.
-            </p>
-          ) : (
-            <>
-              <Input
-                {...field('password')}
-                label="New password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <Input
-                {...field('confirmation')}
-                label="Confirm new password"
-                name="confirmation"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={confirmation}
-                onChange={(e) => setConfirmation(e.target.value)}
-              />
-              <p>Use at least 8 characters.</p>
-            </>
-          )}
-          <Button type="submit">
-            {loading
-              ? 'Saving…'
-              : passwordUpdated
-                ? 'Finish signing out'
-                : 'Save new password'}
-          </Button>
-        </fieldset>
-        {error && <p role="alert">{error}</p>}
-      </form>
-    </>
+        <FormFieldset disabled={loading}>
+          <legend className="visually-hidden">New password</legend>
+          <Stack size="m">
+            {passwordUpdated ? (
+              <p
+                role="status"
+                className="no-margin full-inline-size text-14 lh-130 text-secondary text-center"
+              >
+                Your password was changed. Finish signing out to return to
+                login.
+              </p>
+            ) : (
+              <Stack size="s">
+                <Input
+                  {...field('password')}
+                  label="New password"
+                  name="password"
+                  type="password"
+                  placeholder="Enter password"
+                  autoComplete="new-password"
+                  description="At least 1 uppercase character, 1 number, 1 lowercase character, minimum 9 symbols"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <Input
+                  {...field('confirmation')}
+                  label="Confirm new password"
+                  name="confirmation"
+                  type="password"
+                  placeholder="Confirm new password"
+                  autoComplete="new-password"
+                  required
+                  value={confirmation}
+                  onChange={(e) => setConfirmation(e.target.value)}
+                />
+              </Stack>
+            )}
+            <Button
+              type="submit"
+              variant="primary"
+              size="m"
+              className="full-inline-size"
+            >
+              {passwordUpdated ? 'Finish signing out' : 'Reset and login'}
+            </Button>
+            {error && <FormError className="text-center">{error}</FormError>}
+          </Stack>
+        </FormFieldset>
+      </Form>
+    </Stack>
   );
 }

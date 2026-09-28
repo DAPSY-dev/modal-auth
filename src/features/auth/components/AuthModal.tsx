@@ -1,6 +1,9 @@
 import { Button } from '../../../components/Button';
 import { useEffect, type ReactNode } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/store';
+import { Title } from '../../../components/Title';
+import { Stack } from '../../../components/Stack';
+import { Icon } from '../../../components/Icon';
 import { Modal } from '../../../components/Modal';
 import { authService } from '../../../services/authService';
 import { showModal, signedOut } from '../authSlice';
@@ -72,25 +75,38 @@ export function AuthModal({ loginForm }: { loginForm?: ReactNode }) {
       break;
     case 'changePasswordSuccess':
       view = (
-        <>
-          <h2 id="auth-title" tabIndex={-1}>
+        <Stack size="l">
+          <Title id="auth-title" tabIndex={-1} className="text-center">
             Password changed
-          </h2>
-          <p role="status">Your password has been changed successfully.</p>
-        </>
+          </Title>
+          <p
+            role="status"
+            className="no-margin text-14 lh-130 text-secondary text-center"
+          >
+            Your password has been changed successfully.
+          </p>
+          <div className="text-center">
+            <Icon
+              name="notification-success"
+              className="display-inline-block size-xs text-success"
+            />
+          </div>
+        </Stack>
       );
       break;
     case 'callbackError':
       view = (
-        <>
-          <h2 id="auth-title" tabIndex={-1}>
+        <Stack size="l">
+          <Title id="auth-title" tabIndex={-1} className="text-center">
             This link is invalid or has expired
-          </h2>
-          <p role="alert">
+          </Title>
+          <p role="alert" className="no-margin text-14 lh-130 text-secondary">
             Please request a new password-reset email, or log in if you have
             already verified your account.
           </p>
           <Button
+            variant="primary"
+            size="m"
             disabled={busy}
             onClick={() => {
               void run(async () => {
@@ -99,10 +115,11 @@ export function AuthModal({ loginForm }: { loginForm?: ReactNode }) {
                 dispatch(showModal('forgotPassword'));
               });
             }}
+            className="full-inline-size"
           >
             Request a new reset link
           </Button>
-        </>
+        </Stack>
       );
       break;
   }

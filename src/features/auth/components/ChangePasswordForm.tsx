@@ -1,6 +1,9 @@
 import { Button } from '../../../components/Button';
 import { useState } from 'react';
 import { Input } from '../../../components/Input';
+import { Title } from '../../../components/Title';
+import { Form, FormError, FormFieldset } from '../../../components/Form';
+import { Stack } from '../../../components/Stack';
 import { useAppDispatch } from '../../../app/store';
 import { authService } from '../../../services/authService';
 import { showModal } from '../authSlice';
@@ -22,11 +25,14 @@ export function ChangePasswordForm() {
     confirmation: () => validateConfirmation(password, confirmation),
   });
   return (
-    <>
-      <h2 id="auth-title" tabIndex={-1}>
+    <Stack size="l">
+      <Title id="auth-title" tabIndex={-1} className="text-center">
         Change password
-      </h2>
-      <form
+      </Title>
+      <p className="no-margin full-inline-size text-14 lh-130 text-secondary text-center">
+        Please create and enter your new password
+      </p>
+      <Form
         noValidate
         aria-label="Change password"
         aria-busy={loading}
@@ -57,48 +63,60 @@ export function ChangePasswordForm() {
           });
         }}
       >
-        <fieldset disabled={loading}>
-          <legend>Password details</legend>
-          <Input
-            {...field('oldPassword')}
-            label="Old password"
-            name="oldPassword"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={oldPassword}
-            onChange={(e) => {
-              setOldPassword(e.target.value);
-              setOldPasswordError(undefined);
-            }}
-          />
-          <Input
-            {...field('password')}
-            label="New password"
-            name="password"
-            type="password"
-            autoComplete="new-password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Input
-            {...field('confirmation')}
-            label="Confirm new password"
-            name="confirmation"
-            type="password"
-            autoComplete="new-password"
-            required
-            value={confirmation}
-            onChange={(e) => setConfirmation(e.target.value)}
-          />
-          <p>Use at least 8 characters.</p>
-          <Button type="submit">
-            {loading ? 'Saving…' : 'Save new password'}
-          </Button>
-        </fieldset>
-        {error && <p role="alert">{error}</p>}
-      </form>
-    </>
+        <FormFieldset disabled={loading}>
+          <legend className="visually-hidden">Password details</legend>
+          <Stack size="m">
+            <Stack size="s">
+              <Input
+                {...field('oldPassword')}
+                label="Old password"
+                name="oldPassword"
+                type="password"
+                placeholder="Enter old password"
+                autoComplete="current-password"
+                required
+                value={oldPassword}
+                onChange={(e) => {
+                  setOldPassword(e.target.value);
+                  setOldPasswordError(undefined);
+                }}
+              />
+              <Input
+                {...field('password')}
+                label="New password"
+                name="password"
+                type="password"
+                placeholder="Enter new password"
+                autoComplete="new-password"
+                description="At least 1 uppercase character, 1 number, 1 lowercase character, minimum 9 symbols"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Input
+                {...field('confirmation')}
+                label="Repeat new password"
+                name="confirmation"
+                type="password"
+                placeholder="Repeat new password"
+                autoComplete="new-password"
+                required
+                value={confirmation}
+                onChange={(e) => setConfirmation(e.target.value)}
+              />
+            </Stack>
+            <Button
+              type="submit"
+              variant="primary"
+              size="m"
+              className="full-inline-size"
+            >
+              Save
+            </Button>
+            {error && <FormError className="text-center">{error}</FormError>}
+          </Stack>
+        </FormFieldset>
+      </Form>
+    </Stack>
   );
 }

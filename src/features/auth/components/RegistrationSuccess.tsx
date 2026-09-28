@@ -1,24 +1,22 @@
-import { Button } from '../../../components/Button';
-import { useAppDispatch } from '../../../app/store';
-import { showModal } from '../authSlice';
+import { Title } from '../../../components/Title';
+import { Stack } from '../../../components/Stack';
+import { Icon } from '../../../components/Icon';
 
 export function RegistrationSuccess() {
-  const dispatch = useAppDispatch();
   return (
-    <>
-      <h2 id="auth-title" tabIndex={-1}>
-        <span aria-hidden="true">✓ </span>Registration successful
-      </h2>
-      <p role="status">
+    <Stack size="l">
+      <Title id="auth-title" tabIndex={-1} className="text-center">
+        Registration successful
+      </Title>
+      <p role="status" className="no-margin text-14 lh-130 text-secondary">
         Please check your email to verify your account before logging in.
       </p>
-      <p>
-        If you already have an account, log in or reset your password. A new
-        verification email may not be sent.
-      </p>
-      <Button onClick={() => dispatch(showModal('login'))}>
-        Back to login
-      </Button>
-    </>
+      <div className="text-center">
+        <Icon
+          name="notification-success"
+          className="display-inline-block size-xs text-success"
+        />
+      </div>
+    </Stack>
   );
 }
