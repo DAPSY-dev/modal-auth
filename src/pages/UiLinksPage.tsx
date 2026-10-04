@@ -11,7 +11,7 @@ export function UiLinksPage() {
             Back to UI showcase
           </Link>
         </p>
-        <h1>Inputs</h1>
+        <h1>Links</h1>
         <h2>Types</h2>
         <ul>
           <li>
